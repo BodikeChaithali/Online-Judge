@@ -1,0 +1,67 @@
+.update-page {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 72px);
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.update-card {
+  width: 100%;
+  max-width: 600px;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.update-card h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.update-card input {
+  height: 50px;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  background: #020617;
+  color: white;
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+.update-card input::placeholder {
+  color: #94a3b8;
+}
+
+.update-card button {
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.update-card button:hover {
+  background: #1d4ed8;
+}
+
+.error-message {
+  background: rgba(239,68,68,.15);
+  color: #ef4444;
+  padding: 12px;
+  border-radius: 10px;
+}

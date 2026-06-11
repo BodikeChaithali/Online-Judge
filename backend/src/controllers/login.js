@@ -27,7 +27,15 @@ const loginHandler = async (req, res) => {
             expiresIn: "1d"
         }
     );
-    res.status(200).json({message: "Login successful", token: token});
+    res.status(200).json({
+        message: "Login successful", 
+        token: token, 
+        user: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+        }
+    });
 }
 
 export default loginHandler;

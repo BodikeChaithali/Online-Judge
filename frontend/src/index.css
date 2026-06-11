@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f172a 40%, #1e1b4b 100%);
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- White circular background -->
+  <circle cx="55" cy="55" r="50" fill="white" stroke="black" stroke-width="3"/>
+
+  <!-- </> symbol -->
+  <text
+    x="50"
+    y="52"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="system-ui, sans-serif"
+    font-size="38"
+    font-weight="700"
+    fill="#000"
+  >
+    &lt;/&gt;
+  </text>
+</svg>

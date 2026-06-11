@@ -2,6 +2,7 @@ import express from 'express';
 import authRoutes from './src/routes/authRoutes.js';
 import dotenv from 'dotenv';
 import connectDB from './src/database/db.js';
+import cors from "cors";
 
 dotenv.config();
 
@@ -10,11 +11,23 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-connectDB();
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+}));
 
 app.use('/', authRoutes);
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log(`http://localhost:${port}`);
-});
+const startServer = async () => {
+  try {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+      console.log(`http://localhost:${port}`);
+    });
+    await connectDB();
+  } catch (err) {
+    console.error('Failed to start server', err);
+    process.exit(1);
+  }
+};
+
+startServer();
