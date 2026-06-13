@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
+import ProtectedRoute from "./components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,10 +15,41 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/problems" element={<Problems />} />
-      <Route path="/problems/:id" element={<ProblemDetails />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/update-profile" element={<UpdateProfile />} />
+      <Route
+        path="/problems"
+        element={
+          <ProtectedRoute>
+            <Problems />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/problems/:id"
+        element={
+          <ProtectedRoute>
+            <ProblemDetails />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/update-profile"
+        element={
+          <ProtectedRoute>
+            <UpdateProfile />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }

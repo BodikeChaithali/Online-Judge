@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { deleteUser } from "../services/authService";
 
 export default function Profile() {
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
-  const firstName = user.firstName || "John";
-  const lastName = user.lastName || "";
-  const email = user.email || "john@example.com";
+  if (!user) 
+    return null;
+  const firstName = user.firstName;
+  const lastName = user.lastName;
+  const email = user.email;
   const [showDeleteBox, setShowDeleteBox] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
