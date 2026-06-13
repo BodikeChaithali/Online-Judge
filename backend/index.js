@@ -3,6 +3,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import dotenv from 'dotenv';
 import connectDB from './src/database/db.js';
 import cors from "cors";
+import compilerRoutes from "./src/routes/compilerRoutes.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(cors({
 }));
 
 app.use('/', authRoutes);
+app.use('/', compilerRoutes);
 
 const startServer = async () => {
   try {
