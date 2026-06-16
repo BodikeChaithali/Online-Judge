@@ -10,7 +10,7 @@
   height: calc(100vh - 72px);
   background: #020617;
   padding: 16px 20px 24px 24px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .problem-layout {
@@ -21,10 +21,9 @@
   gap: 12px;
 }
 
-
 .problem-statement {
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 24px;
   overflow-y: auto;
@@ -50,17 +49,17 @@
 }
 
 .easy {
-  background: rgba(0,184,163,.15);
+  background: rgba(0, 184, 163, 0.15);
   color: #00b8a3;
 }
 
 .medium {
-  background: rgba(255,192,30,.15);
+  background: rgba(255, 192, 30, 0.15);
   color: #ffc01e;
 }
 
 .hard {
-  background: rgba(255,55,95,.15);
+  background: rgba(255, 55, 95, 0.15);
   color: #ff375f;
 }
 
@@ -108,12 +107,11 @@
   gap: 12px;
   height: 100%;
   padding-right: 6px;
-
 }
 
 .editor-panel {
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   overflow: hidden;
   display: flex;
@@ -127,19 +125,45 @@
   align-items: center;
   padding: 0 18px;
   background: #111827;
-  border-bottom: 1px solid rgba(255,255,255,.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-weight: 600;
+}
+
+.editor-header select {
+  background: #1e293b;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.editor-header select:hover {
+  border-color: #2563eb;
+}
+
+.editor-header select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.editor-header option {
+  background: #1e293b;
+  color: white;
 }
 
 .bottom-panel {
   display: grid;
-  grid-template-columns: 100%;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
+  height: 100%;
 }
 
 .output-panel {
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 16px;
   overflow-y: auto;
@@ -207,4 +231,75 @@
   background: #020617;
   color: white;
   font-size: 24px;
+}
+
+.output-panel pre {
+  white-space: pre-wrap;
+  color: #fff;
+  font-family: monospace;
+  margin-top: 5px;
+}
+
+.input-box {
+  width: 100%;
+  height: 60px;
+  background: #020617;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 5px;
+  font-family: monospace;
+}
+
+.input-box:focus {
+  border-color: #2563eb;
+}
+
+.input-panel,
+.output-panel {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.input-box {
+  width: 100%;
+  height: calc(100% - 40px);
+  background: #020617;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+  resize: none;
+  outline: none;
+  font-family: monospace;
+}
+
+.save-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+  transition: opacity 0.3s ease;
+}
+
+.save-status--saving {
+  color: #a0aec0;
+}
+
+.save-status--saved {
+  color: #68d391;
+}
+
+.save-status--error {
+  color: #fc8181;
+}
+
+.save-status--unsaved {
+  color: #f6e05e;
 }
