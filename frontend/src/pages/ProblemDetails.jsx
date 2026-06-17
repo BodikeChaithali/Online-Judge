@@ -69,7 +69,7 @@ export default function ProblemDetails() {
               ))}
             </ul>
             <h3>Input Format</h3>
-            <p>{problem.inputFormat}</p>
+            <pre>{problem.inputFormat}</pre>
             <h3>Output Format</h3>
             <p>{problem.outputFormat}</p>
           </div>

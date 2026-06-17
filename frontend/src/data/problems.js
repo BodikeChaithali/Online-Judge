@@ -13,7 +13,7 @@ export const problems = [
       },
     ],
     constraints: ["-1000 <= a, b <= 1000"],
-    inputFormat: "a = first integer, b = second integer",
+    inputFormat: "The first line has two integers a and b.",
     outputFormat: "The sum of the two integers.",
   },
   {
@@ -23,7 +23,7 @@ export const problems = [
     tags: ["Math"],
     statement:
       "Given two integers a and b, return the product of the two integers.",
-    inputFormat: "a = first integer, b = second integer",
+    inputFormat: "The first line has two integers a and b.",
     outputFormat: "The product of the two integers.",
     examples: [
       {
@@ -40,7 +40,7 @@ export const problems = [
     tags: ["Array"],
     statement:
       "Given an array of integers, return the array with elements in reverse order.",
-    inputFormat: "An array of integers.",
+    inputFormat: "The first line contains an integer n.\nThe second line contains n space-separated integers.",
     outputFormat: "The array with elements in reverse order.",
     examples: [
       {
@@ -57,7 +57,7 @@ export const problems = [
     tags: ["Array"],
     statement:
       "Given an array of integers, return the largest number in the array.",
-    inputFormat: "An array of integers.",
+    inputFormat: "The first line has one integer n.\nThe second line conatins n integers with space between them.",
     outputFormat: "The largest number in the array.",
     examples: [
       {
@@ -82,7 +82,7 @@ export const problems = [
         output: "true",
       },
       {
-        input: "s = 'hello'",
+        input: "The First line contains a String.",
         output: "false",
       },
     ],
@@ -116,7 +116,7 @@ export const problems = [
     tags: ["Math"],
     statement:
       "Given two integers a and b, return the difference of the two integers.",
-    inputFormat: "a = first integer, b = second integer",
+    inputFormat: "The first line has two integers a and b.",
     outputFormat: "The difference of the two integers.",
     examples: [
       {
@@ -133,7 +133,7 @@ export const problems = [
     tags: ["Math"],
     statement:
       "Given two integers a and b, return the quotient of the two integers.",
-    inputFormat: "a = first integer, b = second integer",
+    inputFormat: "The first line has two integers a and b.",
     outputFormat: "The quotient of the two integers.",
     examples: [
       {
@@ -142,27 +142,6 @@ export const problems = [
       },
     ],
     constraints: ["-1000 <= a, b <= 1000", "b != 0", "Only one valid answer exists"],
-  },
-  {
-    id: 9,
-    title: "Check for Anagram",
-    difficulty: "Medium",
-    tags: ["String"],
-    statement:
-      "Given two strings s and t, return true if t is an anagram of s, and false otherwise.",
-    inputFormat: "Two strings s and t.",
-    outputFormat: "true if t is an anagram of s, false otherwise.",
-    examples: [
-      {
-        input: "s = 'listen', t = 'silent'",
-        output: "true",
-      },
-      {
-        input: "s = 'hello', t = 'world'",
-        output: "false",
-      },
-    ],
-    constraints: ["1 <= s.length, t.length <= 1000", "s and t consist of lowercase English letters."],  
   }
 ];
 
