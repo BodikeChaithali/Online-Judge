@@ -23,7 +23,9 @@ export const runCode = async (language, code, input = "") => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Execution failed");
+    const error = new Error(data.error || "Execution failed");
+    error.type = data.type;
+    throw error;
   }
 
   return data;

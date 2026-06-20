@@ -24,6 +24,7 @@ export const runCode = async (req, res) => {
     return res.status(400).json({
       success: false,
       error: err.message || String(err),
+      type: err.message === "Time Limit Exceeded" ? "TLE" : "ERROR",
     });
   } 
   finally {
