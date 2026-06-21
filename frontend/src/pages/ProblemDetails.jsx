@@ -6,6 +6,7 @@ import { problems } from "../data/problems";
 import { runCode } from "../services/compilerService";
 import { useDraft } from "../hooks/useDraft";
 import { submitCode, getSubmission, getProblemSubmissions,} from "../services/submissionService";
+import { getAIReview } from "../services/aiReviewService";
 import "./css/ProblemDetails.css";
 
 export default function ProblemDetails() {
@@ -29,6 +30,11 @@ export default function ProblemDetails() {
   const [submissions, setSubmissions] = useState([]);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [showSubmissionStatus, setShowSubmissionStatus] = useState(false);
+  const [aiReview, setAiReview] = useState(null);
+  const [lastReviewKey, setLastReviewKey] = useState("");
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState("");
+    
   if (!problem) {
     return (
       <>
@@ -111,6 +117,27 @@ export default function ProblemDetails() {
     }
   };
 
+  const handleAIReview = async () => {
+    try {
+      setActiveTab("ai-review");
+      const reviewKey = `${language}-${code}`;
+      if (aiReview && lastReviewKey === reviewKey)   {
+        return;
+      }
+      setAiReview(null);
+      setReviewMessage("");
+      setReviewLoading(true);
+      const review = await getAIReview(code,language,problem.title,user.email,);
+      setAiReview(review);
+      setLastReviewKey(reviewKey);
+    } catch (err) {
+      setAiReview(null);
+      setReviewMessage(err.message || "Failed to generate review",);
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -130,14 +157,18 @@ export default function ProblemDetails() {
               >
                 Submissions
               </button>
+              <button
+                className={activeTab === "ai-review" ? "active-tab" : ""}
+                onClick={() => setActiveTab("ai-review")}
+              >
+                AI Review
+              </button>
             </div>
             {activeTab === "description" ? (
               <>
                 <h1>{problem.title}</h1>
                 <div className="problem-meta">
-                  <span
-                    className={`difficulty ${problem.difficulty.toLowerCase()}`}
-                  >
+                  <span className={`difficulty ${problem.difficulty.toLowerCase()}`}>
                     {problem.difficulty}
                   </span>
                   {problem.tags.map((tag) => (
@@ -167,7 +198,7 @@ export default function ProblemDetails() {
                 <h3>Output Format</h3>
                 <p>{problem.outputFormat}</p>
               </>
-            ) : (
+            ) : activeTab === "submissions" ? (
               <div className="submissions-tab">
                 {submissions.length === 0 ? (
                   <p>No submissions yet</p>
@@ -195,7 +226,43 @@ export default function ProblemDetails() {
                   ))
                 )}
               </div>
-            )}
+                ) : (
+                  <div className="ai-review-tab">
+                    {reviewLoading ? (
+                      <div className="empty-review">
+                        <h3>Generating AI Review...</h3>
+                        <p>Analyzing correctness, complexity and code quality.</p>
+                      </div>
+                      ) : reviewMessage ? (
+                        <h3>{reviewMessage}</h3>
+                      ) : aiReview ? (
+                      <>
+                        <h2>Score: {aiReview.score}/100</h2>
+                        <h3>Correctness</h3>
+                        <p>{aiReview.correctness}</p>
+                        <h3>Time Complexity</h3>
+                        <p>{aiReview.timeComplexity}</p>
+                        <h3>Space Complexity</h3>
+                        <p>{aiReview.spaceComplexity}</p>
+                        <h3>Potential Bugs</h3>
+                        <p>{aiReview.bugs}</p>
+                        <h3>Optimization Suggestions</h3>
+                        <p>{aiReview.optimization}</p>
+                        <h3>Code Quality</h3>
+                        <p>{aiReview.codeQuality}</p>
+                        <h3>Final Verdict</h3>
+                        <p>{aiReview.finalVerdict}</p>
+                      </>
+                    ) : (
+                    <div className="empty-review">
+                      <h3>No AI Review Yet</h3>
+                      <p>
+                        Click the AI Review button to analyz your solution.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
           </div>
           <div className="right-panel">
             <div className="editor-panel">
@@ -283,7 +350,12 @@ export default function ProblemDetails() {
               <button className="submit-btn" onClick={handleSubmit}>
                 Submit
               </button>
-              <button className="review-btn">AI Review</button>
+              <button
+                className="review-btn"
+                onClick={handleAIReview}
+              >
+                AI Review
+              </button>
               <button
                 className="reset-btn"
                 onClick={() => {

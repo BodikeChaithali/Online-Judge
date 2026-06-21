@@ -471,3 +471,29 @@
   background: rgba(234, 179, 8, 0.2);
   color: #eab308;
 }
+
+.ai-review-tab {
+  color: white;
+}
+
+.ai-review-tab h2 {
+  margin-bottom: 18px;
+  color: #58a6ff;
+}
+
+.ai-review-tab h3 {
+  margin-top: 18px;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+}
+
+.ai-review-tab p {
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.empty-review {
+  text-align: center;
+  margin-top: 80px;
+  color: #94a3b8;
+}

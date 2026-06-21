@@ -1,13 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import authRoutes from './src/routes/authRoutes.js';
-import dotenv from 'dotenv';
 import connectDB from './src/database/db.js';
 import cors from "cors";
 import compilerRoutes from "./src/routes/compilerRoutes.js";
 import draftRoutes from "./src/routes/draftRoutes.js";
 import submissionRoutes from "./src/routes/submissionRoutes.js";
-
-dotenv.config();
+import aiReviewRoutes from "./src/routes/aiReviewRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -22,6 +22,7 @@ app.use('/', authRoutes);
 app.use('/', compilerRoutes);
 app.use('/', draftRoutes);
 app.use("/", submissionRoutes);
+app.use("/", aiReviewRoutes);
 
 const startServer = async () => {
   try {
