@@ -5,7 +5,11 @@ import Navbar from "../components/Navbar";
 import { problems } from "../data/problems";
 import { runCode } from "../services/compilerService";
 import { useDraft } from "../hooks/useDraft";
-import { submitCode, getSubmission, getProblemSubmissions,} from "../services/submissionService";
+import {
+  submitCode,
+  getSubmission,
+  getProblemSubmissions,
+} from "../services/submissionService";
 import { getAIReview } from "../services/aiReviewService";
 import "./css/ProblemDetails.css";
 
@@ -13,6 +17,7 @@ export default function ProblemDetails() {
   const { id } = useParams();
   const problem = problems.find((p) => p.id === Number(id));
   const user = JSON.parse(localStorage.getItem("user"));
+  const isLoggedIn = !!user;
   const {
     language,
     code,
@@ -34,7 +39,7 @@ export default function ProblemDetails() {
   const [lastReviewKey, setLastReviewKey] = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewMessage, setReviewMessage] = useState("");
-    
+
   if (!problem) {
     return (
       <>
@@ -44,8 +49,12 @@ export default function ProblemDetails() {
     );
   }
   const loadSubmissions = async () => {
+    if (!user) return;
     try {
-      const data = await getProblemSubmissions(problem.id, user.email);
+      const data = await getProblemSubmissions(
+        problem.id,
+        user.email
+      );
       setSubmissions(data);
     } catch (err) {
       console.error(err);
@@ -53,9 +62,11 @@ export default function ProblemDetails() {
   };
 
   useEffect(() => {
-    loadSubmissions();
+    if (user) {
+      loadSubmissions();
+    }
   }, []);
-  
+
   useEffect(() => {
     if (!submissionId) return;
     const interval = setInterval(async () => {
@@ -101,6 +112,10 @@ export default function ProblemDetails() {
   };
 
   const handleSubmit = async () => {
+    if (!isLoggedIn) {
+      setOutput("🔒 Login required to submit solutions.");
+      return;
+    }
     try {
       const submission = await submitCode({
         userEmail: user.email,
@@ -118,21 +133,32 @@ export default function ProblemDetails() {
   };
 
   const handleAIReview = async () => {
+    if (!isLoggedIn) {
+      setActiveTab("ai-review");
+      setAiReview(null);
+      setReviewMessage("🔒 Login required to use AI Review.");
+      return;
+    }
     try {
       setActiveTab("ai-review");
       const reviewKey = `${language}-${code}`;
-      if (aiReview && lastReviewKey === reviewKey)   {
+      if (aiReview && lastReviewKey === reviewKey) {
         return;
       }
       setAiReview(null);
       setReviewMessage("");
       setReviewLoading(true);
-      const review = await getAIReview(code,language,problem.title,user.email,);
+      const review = await getAIReview(
+        code,
+        language,
+        problem.title,
+        user.email,
+      );
       setAiReview(review);
       setLastReviewKey(reviewKey);
     } catch (err) {
       setAiReview(null);
-      setReviewMessage(err.message || "Failed to generate review",);
+      setReviewMessage(err.message || "Failed to generate review");
     } finally {
       setReviewLoading(false);
     }
@@ -168,7 +194,9 @@ export default function ProblemDetails() {
               <>
                 <h1>{problem.title}</h1>
                 <div className="problem-meta">
-                  <span className={`difficulty ${problem.difficulty.toLowerCase()}`}>
+                  <span
+                    className={`difficulty ${problem.difficulty.toLowerCase()}`}
+                  >
                     {problem.difficulty}
                   </span>
                   {problem.tags.map((tag) => (
@@ -200,14 +228,24 @@ export default function ProblemDetails() {
               </>
             ) : activeTab === "submissions" ? (
               <div className="submissions-tab">
-                {submissions.length === 0 ? (
-                  <p>No submissions yet</p>
+                {!user ? (
+                  <div className="empty-review">
+                    <h3>Login Required</h3>
+                    <p>Login to view your submissions.</p>
+                  </div>
+                ) : submissions.length === 0 ? (
+                  <div className="empty-review">
+                    <h3>No Submissions Yet</h3>
+                    <p>Submit a solution to see your history.</p>
+                  </div>
                 ) : (
                   submissions.map((sub) => (
                     <div key={sub._id} className="submission-card">
                       <div className="submission-top">
                         <span
-                          className={`status-badge ${sub.status.toLowerCase().replaceAll(" ", "-")}`}
+                          className={`status-badge ${sub.status
+                            .toLowerCase()
+                            .replaceAll(" ", "-")}`}
                         >
                           {sub.status}
                         </span>
@@ -226,43 +264,45 @@ export default function ProblemDetails() {
                   ))
                 )}
               </div>
+            ) : (
+              <div className="ai-review-tab">
+                {reviewLoading ? (
+                  <div className="empty-review">
+                    <h3>Generating AI Review...</h3>
+                    <p>Analyzing correctness, complexity and code quality.</p>
+                  </div>
+                ) : reviewMessage ? (
+                  <h3>{reviewMessage}</h3>
+                ) : aiReview ? (
+                  <>
+                    <h2>Score: {aiReview.score}/100</h2>
+                    <h3>Correctness</h3>
+                    <p>{aiReview.correctness}</p>
+                    <h3>Time Complexity</h3>
+                    <p>{aiReview.timeComplexity}</p>
+                    <h3>Space Complexity</h3>
+                    <p>{aiReview.spaceComplexity}</p>
+                    <h3>Potential Bugs</h3>
+                    <p>{aiReview.bugs}</p>
+                    <h3>Optimization Suggestions</h3>
+                    <p>{aiReview.optimization}</p>
+                    <h3>Code Quality</h3>
+                    <p>{aiReview.codeQuality}</p>
+                    <h3>Final Verdict</h3>
+                    <p>{aiReview.finalVerdict}</p>
+                  </>
                 ) : (
-                  <div className="ai-review-tab">
-                    {reviewLoading ? (
-                      <div className="empty-review">
-                        <h3>Generating AI Review...</h3>
-                        <p>Analyzing correctness, complexity and code quality.</p>
-                      </div>
-                      ) : reviewMessage ? (
-                        <h3>{reviewMessage}</h3>
-                      ) : aiReview ? (
-                      <>
-                        <h2>Score: {aiReview.score}/100</h2>
-                        <h3>Correctness</h3>
-                        <p>{aiReview.correctness}</p>
-                        <h3>Time Complexity</h3>
-                        <p>{aiReview.timeComplexity}</p>
-                        <h3>Space Complexity</h3>
-                        <p>{aiReview.spaceComplexity}</p>
-                        <h3>Potential Bugs</h3>
-                        <p>{aiReview.bugs}</p>
-                        <h3>Optimization Suggestions</h3>
-                        <p>{aiReview.optimization}</p>
-                        <h3>Code Quality</h3>
-                        <p>{aiReview.codeQuality}</p>
-                        <h3>Final Verdict</h3>
-                        <p>{aiReview.finalVerdict}</p>
-                      </>
-                    ) : (
-                    <div className="empty-review">
-                      <h3>No AI Review Yet</h3>
-                      <p>
-                        Click the AI Review button to analyz your solution.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+                  <div className="empty-review">
+                    <h3>{user ? "No AI Review Yet" : "Login Required"}</h3>
+                    <p>
+                      {user
+                        ? "Click AI Review button to analyze your solution."
+                        : "Login to generate AI Reviews."}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="right-panel">
             <div className="editor-panel">
@@ -350,10 +390,7 @@ export default function ProblemDetails() {
               <button className="submit-btn" onClick={handleSubmit}>
                 Submit
               </button>
-              <button
-                className="review-btn"
-                onClick={handleAIReview}
-              >
+              <button className="review-btn" onClick={handleAIReview}>
                 AI Review
               </button>
               <button

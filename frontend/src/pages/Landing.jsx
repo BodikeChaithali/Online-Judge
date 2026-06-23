@@ -15,20 +15,16 @@ export default function Landing() {
           in contests, and track your progress with OnlineJudge.
         </p>
         <div className="hero-buttons">
-          {user ? (
+          <>
             <Link to="/problems" className="primary-btn">
-              Go To Problems
+              Start Solving
             </Link>
-          ) : (
-            <>
-              <Link to="/login" className="primary-btn">
-                Get Started
-              </Link>
+            {!user && (
               <Link to="/register" className="secondary-btn">
                 Create Account
               </Link>
-            </>
-          )}
+            )}
+          </>
         </div>
       </section>
       <footer className="footer">

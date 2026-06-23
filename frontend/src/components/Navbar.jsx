@@ -14,20 +14,26 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-right">
+        <Link to="/compiler" className="nav-link">
+          Compiler
+        </Link>
+        <Link to="/problems" className="nav-link">
+          Problems
+        </Link>
         {user ? (
+          <Link to="/profile" className="profile-link">
+            <div className="avatar">{initial}</div>
+            <span>{firstName}</span>
+          </Link>
+        ) : (
           <>
-            <Link to="/problems" className="nav-link">
-              Problems
+            <Link to="/login" className="login-btn">
+              Login
             </Link>
-            <Link to="/profile" className="profile-link">
-              <div className="avatar">{initial}</div>
-              <span>{firstName}</span>
+            <Link to="/register" className="login-btn">
+              Register
             </Link>
           </>
-        ) : (
-          <Link to="/login" className="login-btn">
-            Login
-          </Link>
         )}
       </div>
     </nav>
