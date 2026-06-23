@@ -8,7 +8,6 @@ import Problems from "./pages/Problems";
 import Profile from "./pages/Profile";
 import ProblemDetails from "./pages/ProblemDetails";
 import UpdateProfile from "./pages/UpdateProfile";
-import Compiler from "./pages/Compiler";
 
 export default function App() {
   return (
@@ -16,7 +15,6 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/compiler" element={<Compiler />} />
       <Route path="/problems" element={<Problems />} />
       <Route path="/problems/:id" element={<ProblemDetails />} />
       <Route
