@@ -14,6 +14,9 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-right">
+        <Link to="/compiler" className="nav-link">
+          Compiler
+        </Link>
         <Link to="/problems" className="nav-link">
           Problems
         </Link>

@@ -1,0 +1,36 @@
+.compiler-page {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 72px);
+  background: #020617;
+  padding: 20px;
+}
+
+.compiler-layout {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  gap: 12px;
+  height: calc(100% - 80px);
+}
+
+.compiler-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.bottom-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.input-panel {
+    height: 50%;
+}
+.output-panel {
+    height: 50%;
+}

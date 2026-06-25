@@ -14,7 +14,7 @@ export default function ProblemEditor({
         <select
           value={language}
           onChange={(e) => {
-            setShowSubmissionStatus(false);
+            setShowSubmissionStatus?.(false);
             handleLanguageChange(e);
           }}
         >
@@ -43,7 +43,7 @@ export default function ProblemEditor({
         theme="vs-dark"
         value={code}
         onChange={(value) => {
-          setShowSubmissionStatus(false);
+          setShowSubmissionStatus?.(false);
           handleCodeChange(value);
         }}
         options={{
