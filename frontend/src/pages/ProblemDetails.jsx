@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { problems } from "../data/problems";
 import { runCode } from "../services/compilerService";
@@ -25,11 +25,11 @@ export default function ProblemDetails() {
     handleLanguageChange,
     handleReset,
   } = useDraft(user?.email, id);
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
-
+  const navigate = useNavigate();
   if (!problem) {
     return (
       <>
@@ -47,8 +47,16 @@ export default function ProblemDetails() {
     showSubmissionStatus,
     setShowSubmissionStatus,
     handleSubmit,
-  } = useSubmissions(user, problem, language, code, 
-    () => setOutput("🔒 Login required to submit solutions."));
+  } = useSubmissions(
+    user,
+    problem,
+    language,
+    code,
+    () => {
+      navigate("/login");
+    },
+    setActiveTab,
+  );
 
   const { aiReview, reviewLoading, reviewMessage, handleAIReview } =
     useAIReview(user, language, code, problem?.title, setActiveTab);

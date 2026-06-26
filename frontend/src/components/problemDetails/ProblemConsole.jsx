@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export default function ProblemConsole({
   showSubmissionStatus,
   submissionStatus,
@@ -5,30 +7,59 @@ export default function ProblemConsole({
   setInput,
   output,
 }) {
-  return showSubmissionStatus && submissionStatus ? (
-    <div className="submission-status">
-      <h3>Submission Status</h3>
-      <p>
-        <strong>Status:</strong> {submissionStatus.status}
-      </p>
-      <p>
-        <strong>Verdict:</strong> {submissionStatus.verdict || "-"}
-      </p>
-    </div>
-  ) : (
-    <div className="bottom-panel">
-      <div className="input-panel">
-        <h3>Input</h3>
-        <textarea
-          className="input-box"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter custom input..."
-        />
+  const [activeTab, setActiveTab] = useState("input");
+
+  useEffect(() => {
+    if (output !== null) {
+      setActiveTab("output");
+    }
+  }, [output]);
+
+  if (showSubmissionStatus && submissionStatus) {
+    return (
+      <div className="submission-status">
+        <h3>Submission Status</h3>
+        <p>
+          <strong>Status:</strong> {submissionStatus.status}
+        </p>
+        <p>
+          <strong>Verdict:</strong> {submissionStatus.verdict || "-"}
+        </p>
       </div>
-      <div className="output-panel">
-        <h3>Output</h3>
-        <pre>{output || "Run your code to see output."}</pre>
+    );
+  }
+
+  return (
+    <div className="bottom-panel">
+      <div className="console-header">
+        <button
+          className={activeTab === "input" ? "active-console-tab" : ""}
+          onClick={() => setActiveTab("input")}
+        >
+          Input
+        </button>
+        <button
+          className={activeTab === "output" ? "active-console-tab" : ""}
+          onClick={() => setActiveTab("output")}
+        >
+          Output
+        </button>
+      </div>
+      <div className="console-body">
+        {activeTab === "input" ? (
+          <textarea
+            className="input-box"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter custom input..."
+          />
+        ) : output === null ? (
+          <pre className="output-none">Run your code to see output.</pre>
+        ) : output === "⏱ Time Limit Exceeded"? (
+          <pre className="output-none">⏱ Time Limit Exceeded</pre>
+        ) : (
+          <pre>{output}</pre>
+        )}
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export default function Compiler() {
   const [language, setLanguage] = useState("Java");
   const [code, setCode] = useState(starterCode.Java);
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleLanguageChange = (e) => {
@@ -39,7 +39,7 @@ export default function Compiler() {
   const handleReset = () => {
     setCode(starterCode[language]);
     setInput("");
-    setOutput("");
+    setOutput(null);
   };
 
   return (

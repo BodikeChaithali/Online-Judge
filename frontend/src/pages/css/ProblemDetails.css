@@ -23,10 +23,12 @@
 
 .problem-statement {
   background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255,255,255,.05);
   border-radius: 16px;
-  padding: 24px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .problem-statement h1 {
@@ -100,12 +102,10 @@
 
 .right-panel {
   display: grid;
-  grid-template-rows:
-    60%
-    32%
-    8%;
+  grid-template-rows: minmax(0, 60fr) minmax(0, 32fr) minmax(0, 8fr);
   gap: 12px;
   height: 100%;
+  min-height: 0;
   padding-right: 6px;
 }
 
@@ -155,10 +155,14 @@
 }
 
 .bottom-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .output-panel {
@@ -305,9 +309,12 @@
 }
 
 .tabs {
+  flex-shrink: 0;
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  padding: 24px 24px 18px;
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255,255,255,.05);
 }
 
 .tabs button {
@@ -496,4 +503,77 @@
   text-align: center;
   margin-top: 80px;
   color: #94a3b8;
+}
+
+.console-header {
+  display: flex;
+  gap: 20px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  background: #111827;
+}
+
+.console-header button {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  padding-bottom: 6px;
+}
+
+.console-header button.active-console-tab {
+  color: white;
+  border-bottom: 2px solid #2563eb;
+}
+
+.console-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: hidden;
+  min-height: 0;
+}
+
+.console-body pre {
+  margin: 0;
+  color: white;
+  white-space: pre-wrap;
+  font-family: monospace;
+  overflow-y: auto;
+}
+
+.console-body .input-box {
+  width: 100%;
+  overflow-y: auto;
+  background: #020617;
+  color: white;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 10px;
+  resize: none;
+  outline: none;
+  font-family: monospace;
+}
+
+.console-body pre,
+.console-body .input-box {
+    height: 100%;
+}
+
+.problem-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+}
+
+.output-none {
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-style: italic;
 }

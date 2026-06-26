@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Filter } from "lucide-react";
-
 import Navbar from "../components/Navbar";
 import { problems } from "../data/problems";
-
 import "./css/Problems.css";
 
 export default function Problems() {
@@ -16,9 +14,8 @@ export default function Problems() {
     const matchesSearch = problem.title
       .toLowerCase()
       .includes(search.toLowerCase());
-      const matchesDifficulty =
-        difficulty === "All" ||
-        problem.difficulty === difficulty;
+    const matchesDifficulty =
+      difficulty === "All" || problem.difficulty === difficulty;
     return matchesSearch && matchesDifficulty;
   });
 
@@ -26,74 +23,62 @@ export default function Problems() {
     <>
       <Navbar />
       <div className="problems-page">
-        <div className="problems-toolbar">
-          <input
-            type="text"
-            placeholder="Search problems..."
-            className="search-input"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button
-            className="filter-btn"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter size={18} />
-            Filters
-          </button>
-        </div>
-        {showFilters && (
-          <div className="difficulty-filters">
+        <div className="problems-content">
+          <div className="problems-toolbar">
+            <input
+              type="text"
+              placeholder="Search problems..."
+              className="search-input"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <button
-              className={difficulty === "All" ? "active-filter" : ""}
-              onClick={() => setDifficulty("All")}
+              className="filter-btn"
+              onClick={() => setShowFilters(!showFilters)}
             >
-              All
+              <Filter size={18} />
             </button>
-            <button
-              className={difficulty === "Easy" ? "active-filter" : ""}
-              onClick={() => setDifficulty("Easy")}
-            >
-              Easy
-            </button>
-            <button
-              className={difficulty === "Medium" ? "active-filter" : ""}
-              onClick={() => setDifficulty("Medium")}
-            >
-              Medium
-            </button>
-            <button
-              className={difficulty === "Hard" ? "active-filter" : ""}
-              onClick={() => setDifficulty("Hard")}
-            >
-              Hard
-            </button>
+            {showFilters && (
+              <div className="difficulty-filters">
+                {["All", "Easy", "Medium", "Hard"].map((level) => (
+                  <button
+                    key={level}
+                    className={difficulty === level ? "active-filter" : ""}
+                    onClick={() => setDifficulty(level)}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-        <div className="problems-container">
-          {filteredProblems.length === 0 ? (
-            <div className="no-problems">
-              No Problems Available
-            </div>
-          ) : (
-            filteredProblems.map((problem) => (
-              <Link
-                key={problem.id}
-                to={`/problems/${problem.id}`}
-                className="problem-card"
-              >
-                <span className="problem-title">
-                  {problem.title}
-                </span>
-
-                <span
-                  className={`difficulty ${problem.difficulty.toLowerCase()}`}
+          <div className="problems-container">
+            {filteredProblems.length === 0 ? (
+              <div className="no-problems">No Problems Available</div>
+            ) : (
+              filteredProblems.map((problem) => (
+                <Link
+                  key={problem.id}
+                  to={`/problems/${problem.id}`}
+                  className="problem-card"
                 >
-                  {problem.difficulty}
-                </span>
-              </Link>
-            ))
-          )}
+                  <span className="problem-title">
+                    {problem.id}. {problem.title}
+                  </span>
+                  <div className="problem-right">
+                    <span
+                      className={`difficulty ${problem.difficulty.toLowerCase()}`}
+                    >
+                      {problem.difficulty}
+                    </span>
+                    <span className="problem-action">
+                      {problem.completed ? "✓" : "-"}
+                    </span>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </>

@@ -5,7 +5,14 @@ import {
   getProblemSubmissions,
 } from "../services/submissionService";
 
-export function useSubmissions(user, problem, language, code, onLoginRequired) {
+export function useSubmissions(
+  user,
+  problem,
+  language,
+  code,
+  onLoginRequired,
+  setActiveTab,
+) {
   const [submissionId, setSubmissionId] = useState(null);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [submissions, setSubmissions] = useState([]);
@@ -13,8 +20,7 @@ export function useSubmissions(user, problem, language, code, onLoginRequired) {
   const [showSubmissionStatus, setShowSubmissionStatus] = useState(false);
 
   const loadSubmissions = async () => {
-    if (!user) return;
-    if (!problem) return;
+    if (!user || !problem) return;
     try {
       const data = await getProblemSubmissions(problem.id, user.email);
       setSubmissions(data);
@@ -25,7 +31,7 @@ export function useSubmissions(user, problem, language, code, onLoginRequired) {
 
   useEffect(() => {
     loadSubmissions();
-  }, [user,problem]);
+  }, [user, problem]);
 
   useEffect(() => {
     if (!submissionId) return;
@@ -35,7 +41,8 @@ export function useSubmissions(user, problem, language, code, onLoginRequired) {
         setSubmissionStatus(data);
         if (data.status !== "Running") {
           clearInterval(interval);
-          loadSubmissions();
+          await loadSubmissions();
+          setActiveTab?.("submissions");
         }
       } catch (err) {
         console.error(err);
@@ -55,10 +62,10 @@ export function useSubmissions(user, problem, language, code, onLoginRequired) {
 
   const handleSubmit = async () => {
     if (!user) {
-        onLoginRequired?.();
-        return;
+      onLoginRequired?.();
+      return;
     }
-    if(!problem) return;
+    if (!problem) return;
     try {
       const submission = await submitCode({
         userEmail: user.email,
@@ -69,7 +76,6 @@ export function useSubmissions(user, problem, language, code, onLoginRequired) {
       });
       setSubmissionId(submission._id);
       setSubmissionStatus(submission);
-      loadSubmissions();
     } catch (err) {
       console.error(err);
     }
