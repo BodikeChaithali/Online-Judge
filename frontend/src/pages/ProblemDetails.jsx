@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { problems } from "../data/problems";
@@ -16,6 +16,7 @@ import "./css/ProblemDetails.css";
 
 export default function ProblemDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const problem = problems.find((p) => p.id === Number(id));
   const { user, loading: authLoading } = useAuth();
   const {
@@ -30,7 +31,25 @@ export default function ProblemDetails() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
-  const navigate = useNavigate();
+  const {
+    submissions,
+    selectedSubmission,
+    setSelectedSubmission,
+    submissionStatus,
+    showSubmissionStatus,
+    setShowSubmissionStatus,
+    handleSubmit,
+  } = useSubmissions(
+    user,
+    problem,
+    language,
+    code,
+    () => navigate("/login"),
+    setActiveTab,
+  );
+
+  const { aiReview, reviewLoading, reviewMessage, handleAIReview } =
+    useAIReview(user, language, code, problem?.title, setActiveTab);
 
   if (authLoading) {
     return (
@@ -49,28 +68,6 @@ export default function ProblemDetails() {
       </>
     );
   }
-
-  const {
-    submissions,
-    selectedSubmission,
-    setSelectedSubmission,
-    submissionStatus,
-    showSubmissionStatus,
-    setShowSubmissionStatus,
-    handleSubmit,
-  } = useSubmissions(
-    user,
-    problem,
-    language,
-    code,
-    () => {
-      navigate("/login");
-    },
-    setActiveTab,
-  );
-
-  const { aiReview, reviewLoading, reviewMessage, handleAIReview } =
-    useAIReview(user, language, code, problem?.title, setActiveTab);
 
   const handleRun = async () => {
     try {

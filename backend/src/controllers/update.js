@@ -1,6 +1,10 @@
 import AuthUser from "../models/authUser.js";
+import Draft from "../models/draftModel.js";
+import Submission from "../models/submissionModel.js";
+import ReviewLimit from "../models/reviewLimitModel.js";
 import bcrypt from "bcryptjs";
 import validator from "validator";
+import jwt from "jsonwebtoken";
 
 const updateHandler = async (req, res) => {
   try {
@@ -79,6 +83,52 @@ const updateHandler = async (req, res) => {
     }
 
     await user.save();
+
+    if (newEmail) {
+      await Draft.updateMany(
+        { email },
+        {
+          $set: {
+            email: newEmail,
+          },
+        },
+      );
+
+      await Submission.updateMany(
+        { userEmail: email },
+        {
+          $set: {
+            userEmail: newEmail,
+          },
+        },
+      );
+
+      await ReviewLimit.updateOne(
+        { userEmail: email },
+        {
+          $set: {
+            userEmail: newEmail,
+          },
+        },
+      );
+    }
+
+    const token = jwt.sign(
+      {
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       message: "User updated successfully",

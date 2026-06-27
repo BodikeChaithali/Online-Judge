@@ -20,17 +20,13 @@ export default function UpdateProfile() {
       return;
     }
     try {
-      await updateUser({
+      const data = await updateUser({
         email: user.email,
         password,
         newEmail,
         newPassword,
       });
-      const updatedUser = {
-        ...user,
-        email: newEmail || user.email,
-      };
-      setUser(updatedUser);
+      setUser(data.user);
       navigate("/profile");
     } catch (err) {
       setError(err.message);

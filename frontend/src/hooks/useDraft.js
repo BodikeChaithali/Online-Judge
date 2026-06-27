@@ -27,19 +27,17 @@ export function useDraft(user, problemId) {
           });
           setDraftsCache(loadedDrafts);
           const resolvedLanguage = lastLanguage || "Java";
-          const resolvedCode =
-            drafts[resolvedLanguage] ?? starterCode[resolvedLanguage];
           setLanguage(resolvedLanguage);
-          setCode(resolvedCode);
+          setCode(drafts[resolvedLanguage] ?? starterCode[resolvedLanguage]);
         }
       } catch (err) {
-        console.error("Failed to load draft:", err);
+        console.error(err);
       } finally {
         isLoadingDraft.current = false;
       }
     };
     loadDraft();
-  }, []);
+  }, [user, problemId]);
 
   useEffect(() => {
     return () => {
@@ -70,7 +68,7 @@ export function useDraft(user, problemId) {
     },
     [user, problemId],
   );
-  
+
   const handleCodeChange = (value) => {
     const newCode = value || "";
     setCode(newCode);
@@ -85,12 +83,9 @@ export function useDraft(user, problemId) {
     const cachedCode = draftsCache[newLanguage] ?? starterCode[newLanguage];
     setCode(cachedCode);
     if (user && problemId) {
-      saveDraft(
-        Number(problemId),
-        newLanguage,
-        cachedCode,
-        newLanguage,
-      ).catch((err) => console.error("Failed to save language switch:", err));
+      saveDraft(Number(problemId), newLanguage, cachedCode, newLanguage).catch(
+        (err) => console.error("Failed to save language switch:", err),
+      );
     }
   };
 

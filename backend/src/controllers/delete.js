@@ -1,4 +1,7 @@
 import AuthUser from "../models/authUser.js";
+import Draft from "../models/draftModel.js";
+import Submission from "../models/submissionModel.js";
+import ReviewLimit from "../models/reviewLimitModel.js";
 import bcrypt from "bcryptjs";
 
 const deleteHandler = async (req, res) => {
@@ -29,6 +32,18 @@ const deleteHandler = async (req, res) => {
         message: "Invalid password",
       });
     }
+
+    await Draft.deleteMany({
+      email,
+    });
+
+    await Submission.deleteMany({
+      userEmail: email,
+    });
+
+    await ReviewLimit.deleteMany({
+      userEmail: email,
+    });
 
     await user.deleteOne();
 

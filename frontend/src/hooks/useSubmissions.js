@@ -49,7 +49,7 @@ export function useSubmissions(
       }
     }, 2000);
     return () => clearInterval(interval);
-  }, [submissionId]);
+  }, [submissionId, setActiveTab]);
 
   useEffect(() => {
     if (!submissionStatus) return;
