@@ -29,7 +29,6 @@ export function useAIReview(user, language, code, problemTitle, setActiveTab) {
         code,
         language,
         problemTitle,
-        user.email,
       );
       setAiReview(review);
       setLastReviewKey(reviewKey);

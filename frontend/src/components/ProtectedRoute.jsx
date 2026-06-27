@@ -1,13 +1,14 @@
 import { Navigate } from "react-router-dom";
-import { isTokenExpired } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("token");
+  const { user, loading } = useAuth();
 
-  if (!token || isTokenExpired()) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

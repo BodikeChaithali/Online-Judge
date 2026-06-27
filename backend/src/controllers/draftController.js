@@ -2,9 +2,10 @@ import Draft from "../models/draftModel.js";
 
 export const saveDraft = async (req, res) => {
   try {
-    const { email, problemId, language, code, lastLanguage } = req.body;
+    const email = req.user.email;
+    const { problemId, language, code, lastLanguage } = req.body;
 
-    if (!email || !problemId || !language) {
+    if (!problemId || !language) {
       return res.status(400).json({
         success: false,
         error: "Missing required fields",
@@ -12,7 +13,10 @@ export const saveDraft = async (req, res) => {
     }
 
     const draft = await Draft.findOneAndUpdate(
-      { email, problemId },
+      {
+        email,
+        problemId,
+      },
       {
         $set: {
           [`drafts.${language}`]: code,
@@ -20,17 +24,17 @@ export const saveDraft = async (req, res) => {
         },
       },
       {
-        upsert: true,
         new: true,
+        upsert: true,
       },
     );
 
-    return res.json({
+    res.json({
       success: true,
       draft,
     });
   } catch (err) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: err.message,
     });
@@ -39,19 +43,19 @@ export const saveDraft = async (req, res) => {
 
 export const getDraft = async (req, res) => {
   try {
-    const { email, problemId } = req.params;
-
+    const email = req.user.email;
+    const { problemId } = req.params;
     const draft = await Draft.findOne({
       email,
       problemId,
     });
 
-    return res.json({
+    res.json({
       success: true,
       draft,
     });
   } catch (err) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: err.message,
     });
@@ -60,10 +64,14 @@ export const getDraft = async (req, res) => {
 
 export const deleteLanguageDraft = async (req, res) => {
   try {
-    const { email, problemId, language } = req.body;
+    const email = req.user.email;
+    const { problemId, language } = req.body;
 
     await Draft.findOneAndUpdate(
-      { email, problemId },
+      {
+        email,
+        problemId,
+      },
       {
         $unset: {
           [`drafts.${language}`]: "",
@@ -71,11 +79,11 @@ export const deleteLanguageDraft = async (req, res) => {
       },
     );
 
-    return res.json({
+    res.json({
       success: true,
     });
   } catch (err) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: err.message,
     });

@@ -12,15 +12,16 @@ const WINDOW_HOURS = 3;
 
 export const generateReview = async (req, res) => {
   try {
-    const { code, language, problemTitle, userEmail } = req.body;
+    const { code, language, problemTitle } = req.body;
+    const userEmail = req.user.email;
+    if (!language || !problemTitle) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
+    }
     if (!code) {
       return res.status(400).json({
         message: "Code is required",
-      });
-    }
-    if (!userEmail) {
-      return res.status(400).json({
-        message: "User email is required",
       });
     }
     let limitDoc = await ReviewLimit.findOne({
@@ -96,6 +97,11 @@ ${code}
     return res.json(review);
   } catch (error) {
     console.error(error);
+    if (error.status === 503) {
+      return res.status(503).json({
+        message: "Gemini is busy. Please try again in a few minutes.",
+      });
+    }
     return res.status(500).json({
       message: "Failed to generate AI Review",
     });

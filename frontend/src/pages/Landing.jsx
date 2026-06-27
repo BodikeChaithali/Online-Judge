@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 import "./css/Landing.css";
 
 export default function Landing() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuth();
 
   return (
     <div className="landing">

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./css/Navbar.css";
 
 export default function Navbar() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuth();
   const firstName = user?.firstName?.split(" ")[0] || "";
   const initial = firstName.charAt(0).toUpperCase();
   return (

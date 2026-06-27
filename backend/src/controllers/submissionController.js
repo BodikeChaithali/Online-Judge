@@ -13,9 +13,9 @@ const languageMap = {
 
 export const createSubmission = async (req, res) => {
   try {
-    const { userEmail, problemId, problemTitle, language, code } = req.body;
+    const { problemId, problemTitle, language, code } = req.body;
     const submission = await Submission.create({
-      userEmail,
+      userEmail: req.user.email,
       problemId,
       problemTitle,
       language,
@@ -89,10 +89,9 @@ async function evaluateSubmission(submission) {
 export const getProblemSubmissions = async (req, res) => {
   try {
     const { problemId } = req.params;
-    const { email } = req.query;
     const submissions = await Submission.find({
       problemId,
-      userEmail: email,
+      userEmail: req.user.email,
     }).sort({
       createdAt: -1,
     });
@@ -106,7 +105,17 @@ export const getProblemSubmissions = async (req, res) => {
 
 export const getSubmission = async (req, res) => {
   try {
-    const submission = await Submission.findById(req.params.id);
+    const submission = await Submission.findOne({
+      _id: req.params.id,
+      userEmail: req.user.email,
+    });
+
+    if (!submission) {
+      return res.status(404).json({
+        message: "Submission not found",
+      });
+    }
+
     res.json(submission);
   } catch (error) {
     res.status(500).json({

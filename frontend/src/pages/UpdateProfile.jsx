@@ -2,11 +2,12 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { updateUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 import "./css/UpdateProfile.css";
 
 export default function UpdateProfile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const { user, setUser } = useAuth();
   const [password, setPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -29,7 +30,7 @@ export default function UpdateProfile() {
         ...user,
         email: newEmail || user.email,
       };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       navigate("/profile");
     } catch (err) {
       setError(err.message);

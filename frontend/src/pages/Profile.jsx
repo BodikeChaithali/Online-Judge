@@ -2,10 +2,11 @@ import Navbar from "../components/Navbar";
 import "./css/Profile.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { deleteUser } from "../services/authService";
 
 export default function Profile() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   if (!user) 
     return null;
@@ -22,8 +23,8 @@ export default function Profile() {
       return;
     }
     try {
-      await deleteUser(email, deletePassword);
-      localStorage.clear();
+      await deleteUser(deletePassword);
+      await logout();
       navigate("/");
     } catch (err) {
       setDeleteError(err.message);
@@ -72,8 +73,8 @@ export default function Profile() {
             </button>
             <button
               className="logout-btn"
-              onClick={() => {
-                localStorage.clear();
+              onClick={async () => {
+                await logout();
                 navigate("/");
               }}
             >

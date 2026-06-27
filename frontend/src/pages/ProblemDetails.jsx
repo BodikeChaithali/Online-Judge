@@ -11,12 +11,13 @@ import ActionButtons from "../components/problemDetails/ActionButtons";
 import SubmissionModal from "../components/problemDetails/SubmissionModal";
 import { useSubmissions } from "../hooks/useSubmissions";
 import { useAIReview } from "../hooks/useAIReview";
+import { useAuth } from "../context/AuthContext";
 import "./css/ProblemDetails.css";
 
 export default function ProblemDetails() {
   const { id } = useParams();
   const problem = problems.find((p) => p.id === Number(id));
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, loading: authLoading } = useAuth();
   const {
     language,
     code,
@@ -24,12 +25,22 @@ export default function ProblemDetails() {
     handleCodeChange,
     handleLanguageChange,
     handleReset,
-  } = useDraft(user?.email, id);
+  } = useDraft(user, id);
   const [output, setOutput] = useState(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const navigate = useNavigate();
+
+  if (authLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="not-found">Loading...</div>
+      </>
+    );
+  }
+
   if (!problem) {
     return (
       <>

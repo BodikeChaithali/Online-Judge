@@ -4,7 +4,7 @@ import { starterCode } from "../data/problems";
 
 const AUTOSAVE_DELAY_MS = 1000;
 
-export function useDraft(email, problemId) {
+export function useDraft(user, problemId) {
   const [language, setLanguage] = useState("Java");
   const [code, setCode] = useState(starterCode["Java"]);
   const [saveStatus, setSaveStatus] = useState("");
@@ -13,12 +13,12 @@ export function useDraft(email, problemId) {
   const autoSaveTimer = useRef(null);
   const isLoadingDraft = useRef(false);
   useEffect(() => {
-    if (!email || !problemId) return;
+    if (!user || !problemId) return;
 
     const loadDraft = async () => {
       try {
         isLoadingDraft.current = true;
-        const data = await getDraft(email, Number(problemId));
+        const data = await getDraft(Number(problemId));
         if (data.draft) {
           const { lastLanguage, drafts } = data.draft;
           const loadedDrafts = {};
@@ -49,14 +49,13 @@ export function useDraft(email, problemId) {
 
   const triggerAutoSave = useCallback(
     (currentLanguage, currentCode) => {
-      if (!email || !problemId) return;
+      if (!user || !problemId) return;
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
       setSaveStatus("unsaved");
       autoSaveTimer.current = setTimeout(async () => {
         try {
           setSaveStatus("saving...");
           await saveDraft(
-            email,
             Number(problemId),
             currentLanguage,
             currentCode,
@@ -69,7 +68,7 @@ export function useDraft(email, problemId) {
         }
       }, AUTOSAVE_DELAY_MS);
     },
-    [email, problemId],
+    [user, problemId],
   );
   
   const handleCodeChange = (value) => {
@@ -85,9 +84,8 @@ export function useDraft(email, problemId) {
     setLanguage(newLanguage);
     const cachedCode = draftsCache[newLanguage] ?? starterCode[newLanguage];
     setCode(cachedCode);
-    if (email && problemId) {
+    if (user && problemId) {
       saveDraft(
-        email,
         Number(problemId),
         newLanguage,
         cachedCode,

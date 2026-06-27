@@ -22,7 +22,7 @@ export function useSubmissions(
   const loadSubmissions = async () => {
     if (!user || !problem) return;
     try {
-      const data = await getProblemSubmissions(problem.id, user.email);
+      const data = await getProblemSubmissions(problem.id);
       setSubmissions(data);
     } catch (err) {
       console.error(err);
@@ -68,7 +68,6 @@ export function useSubmissions(
     if (!problem) return;
     try {
       const submission = await submitCode({
-        userEmail: user.email,
         problemId: problem.id,
         problemTitle: problem.title,
         language,
