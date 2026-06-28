@@ -1,6 +1,7 @@
 export const problems = [
   {
     id: 1,
+    difficulty: "Easy",
     hiddenTests: [
       { input: "1 2", output: "3" },
       { input: "10 20", output: "30" },
@@ -11,6 +12,7 @@ export const problems = [
 
   {
     id: 2,
+    difficulty: "Easy",
     hiddenTests: [
       { input: "3 4", output: "12" },
       { input: "5 5", output: "25" },
@@ -21,6 +23,7 @@ export const problems = [
 
   {
     id: 3,
+    difficulty: "Easy",
     hiddenTests: [
       {
         input: "5\n1 2 3 4 5",
@@ -39,6 +42,7 @@ export const problems = [
 
   {
     id: 4,
+    difficulty: "Medium",
     hiddenTests: [
       {
         input: "5\n1 5 3 9 2",
@@ -57,6 +61,7 @@ export const problems = [
 
   {
     id: 5,
+    difficulty: "Medium",
     hiddenTests: [
       {
         input: "racecar",
@@ -79,6 +84,7 @@ export const problems = [
 
   {
     id: 6,
+    difficulty: "Medium",
     hiddenTests: [
       {
         input: "5",
@@ -101,6 +107,7 @@ export const problems = [
 
   {
     id: 7,
+    difficulty: "Easy",
     hiddenTests: [
       {
         input: "5 3",
@@ -123,6 +130,7 @@ export const problems = [
 
   {
     id: 8,
+    difficulty: "Easy",
     hiddenTests: [
       {
         input: "10 2",

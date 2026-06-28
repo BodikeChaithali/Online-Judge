@@ -21,6 +21,9 @@ export default function Navbar() {
         <Link to="/problems" className="nav-link">
           Problems
         </Link>
+        <Link to="/leaderboard" className="nav-link">
+          Leaderboard
+        </Link>
         {user ? (
           <Link to="/profile" className="profile-link">
             <div className="avatar">{initial}</div>

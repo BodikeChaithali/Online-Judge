@@ -8,6 +8,8 @@ import compilerRoutes from "./src/routes/compilerRoutes.js";
 import draftRoutes from "./src/routes/draftRoutes.js";
 import submissionRoutes from "./src/routes/submissionRoutes.js";
 import aiReviewRoutes from "./src/routes/aiReviewRoutes.js";
+import leaderboardRoutes from "./src/routes/leaderboardRoutes.js";
+import profileRoutes from "./src/routes/profileRoutes.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -27,6 +29,8 @@ app.use('/', compilerRoutes);
 app.use('/', draftRoutes);
 app.use("/", submissionRoutes);
 app.use("/", aiReviewRoutes);
+app.use("/", leaderboardRoutes);
+app.use("/", profileRoutes);
 
 const startServer = async () => {
   try {

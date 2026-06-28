@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import ProblemDetails from "./pages/ProblemDetails";
 import UpdateProfile from "./pages/UpdateProfile";
 import Compiler from "./pages/Compiler";
+import Leaderboard from "./pages/Leaderboard";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/problems" element={<Problems />} />
       <Route path="/problems/:id" element={<ProblemDetails />} />
       <Route path="/compiler" element={<Compiler />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
       <Route
         path="/profile"
         element={
