@@ -10,6 +10,7 @@ import submissionRoutes from "./src/routes/submissionRoutes.js";
 import aiReviewRoutes from "./src/routes/aiReviewRoutes.js";
 import leaderboardRoutes from "./src/routes/leaderboardRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
+import problemRoutes from "./src/routes/problemRoutes.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/", submissionRoutes);
 app.use("/", aiReviewRoutes);
 app.use("/", leaderboardRoutes);
 app.use("/", profileRoutes);
+app.use("/", problemRoutes);
 
 const startServer = async () => {
   try {

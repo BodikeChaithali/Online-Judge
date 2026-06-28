@@ -2,13 +2,13 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import ProblemEditor from "../components/problemDetails/ProblemEditor";
 import ProblemConsole from "../components/problemDetails/ProblemConsole";
-import { starterCode } from "../data/problems";
+import { defaultStarterCode } from "../constants/defaultStarterCode";
 import { runCode } from "../services/compilerService";
 import "./css/Compiler.css";
 
 export default function Compiler() {
   const [language, setLanguage] = useState("Java");
-  const [code, setCode] = useState(starterCode.Java);
+  const [code, setCode] = useState(defaultStarterCode.Java);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ export default function Compiler() {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     setLanguage(lang);
-    setCode(starterCode[lang]);
+    setCode(defaultStarterCode[lang]);
   };
 
   const handleRun = async () => {
@@ -37,7 +37,7 @@ export default function Compiler() {
   };
 
   const handleReset = () => {
-    setCode(starterCode[language]);
+    setCode(defaultStarterCode[language]);
     setInput("");
     setOutput(null);
   };

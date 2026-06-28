@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { Check, Filter } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import { problems } from "../data/problems";
-import { getProblemStatuses } from "../services/problemsService";
+import { getProblems, getProblemStatuses } from "../services/problemsService";
 import "./css/Problems.css";
 
 function getActionLabel(status) {
@@ -34,11 +33,45 @@ function ProblemAction({ status }) {
 
 export default function Problems() {
   const { user } = useAuth();
+  const [problems, setProblems] = useState([]);
+  const [problemsLoading, setProblemsLoading] = useState(true);
+  const [problemsError, setProblemsError] = useState("");
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("All");
   const [showFilters, setShowFilters] = useState(false);
   const [statusMap, setStatusMap] = useState({});
   const [statusLoading, setStatusLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchProblems = async () => {
+      setProblemsLoading(true);
+      setProblemsError("");
+
+      try {
+        const data = await getProblems();
+        if (!cancelled) {
+          setProblems(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProblems([]);
+          setProblemsError(err.message || "Unable to load problems");
+        }
+      } finally {
+        if (!cancelled) {
+          setProblemsLoading(false);
+        }
+      }
+    };
+
+    fetchProblems();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -87,7 +120,7 @@ export default function Problems() {
         difficulty === "All" || problem.difficulty === difficulty;
       return matchesSearch && matchesDifficulty;
     });
-  }, [search, difficulty]);
+  }, [problems, search, difficulty]);
 
   const getProblemStatus = (problemId) => {
     if (!user) return "Not Attempted";
@@ -128,9 +161,22 @@ export default function Problems() {
             )}
           </div>
           <div className="problems-container">
-            {filteredProblems.length === 0 ? (
-              <div className="no-problems">No Problems Available</div>
-            ) : (
+            {problemsLoading && (
+              <div className="no-problems">Loading problems...</div>
+            )}
+
+            {!problemsLoading && problemsError && (
+              <div className="no-problems">{problemsError}</div>
+            )}
+
+            {!problemsLoading &&
+              !problemsError &&
+              filteredProblems.length === 0 && (
+                <div className="no-problems">No Problems Available</div>
+              )}
+
+            {!problemsLoading &&
+              !problemsError &&
               filteredProblems.map((problem) => (
                 <Link
                   key={problem.id}
@@ -153,8 +199,7 @@ export default function Problems() {
                     )}
                   </div>
                 </Link>
-              ))
-            )}
+              ))}
           </div>
         </div>
       </div>

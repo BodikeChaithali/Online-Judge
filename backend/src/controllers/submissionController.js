@@ -1,8 +1,8 @@
 import fs from "fs";
 import Submission from "../models/submissionModel.js";
+import Problem from "../models/problemModel.js";
 import { generateFile } from "../compiler/generateFile.js";
 import { executeCode } from "../compiler/executeCode.js";
-import { problems } from "../data/problems.js";
 
 const languageMap = {
   Java: "java",
@@ -35,7 +35,7 @@ export const createSubmission = async (req, res) => {
 async function evaluateSubmission(submission) {
   let jobDir = null;
   try {
-    const problem = problems.find((p) => p.id === submission.problemId);
+    const problem = await Problem.findOne({ id: submission.problemId }).lean();
     if (!problem) {
       submission.status = "Wrong Answer";
       submission.verdict = "Problem not configured";

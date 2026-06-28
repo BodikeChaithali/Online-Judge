@@ -1,110 +1,70 @@
-import { problems } from "../data/problems.js";
-
 export const DIFFICULTY_POINTS = {
   Easy: 1,
   Medium: 2,
   Hard: 3,
 };
 
-export const problemsCatalog = problems.map((problem) => ({
-  problemId: problem.id,
-  difficulty: problem.difficulty,
-  points: DIFFICULTY_POINTS[problem.difficulty] ?? 0,
-}));
-
-const difficultyPointsStage = {
+const difficultyFromProblemStage = {
   $addFields: {
     points: {
-      $let: {
-        vars: {
-          matched: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: { $literal: problemsCatalog },
-                  as: "problem",
-                  cond: {
-                    $eq: ["$$problem.problemId", "$_id.problemId"],
-                  },
-                },
-              },
-              0,
-            ],
+      $switch: {
+        branches: [
+          {
+            case: { $eq: ["$problemDoc.difficulty", "Easy"] },
+            then: 1,
           },
-        },
-        in: { $ifNull: ["$$matched.points", 0] },
+          {
+            case: { $eq: ["$problemDoc.difficulty", "Medium"] },
+            then: 2,
+          },
+          {
+            case: { $eq: ["$problemDoc.difficulty", "Hard"] },
+            then: 3,
+          },
+        ],
+        default: 0,
       },
     },
-    difficulty: {
-      $let: {
-        vars: {
-          matched: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: { $literal: problemsCatalog },
-                  as: "problem",
-                  cond: {
-                    $eq: ["$$problem.problemId", "$_id.problemId"],
-                  },
-                },
-              },
-              0,
-            ],
-          },
-        },
-        in: { $ifNull: ["$$matched.difficulty", "Unknown"] },
-      },
-    },
+    difficulty: { $ifNull: ["$problemDoc.difficulty", "Unknown"] },
   },
 };
 
-const uniqueProblemDifficultyStage = {
-  $addFields: {
-    points: {
-      $let: {
-        vars: {
-          matched: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: { $literal: problemsCatalog },
-                  as: "problem",
-                  cond: {
-                    $eq: ["$$problem.problemId", "$_id"],
-                  },
-                },
-              },
-              0,
-            ],
-          },
-        },
-        in: { $ifNull: ["$$matched.points", 0] },
-      },
-    },
-    difficulty: {
-      $let: {
-        vars: {
-          matched: {
-            $arrayElemAt: [
-              {
-                $filter: {
-                  input: { $literal: problemsCatalog },
-                  as: "problem",
-                  cond: {
-                    $eq: ["$$problem.problemId", "$_id"],
-                  },
-                },
-              },
-              0,
-            ],
-          },
-        },
-        in: { $ifNull: ["$$matched.difficulty", "Unknown"] },
-      },
-    },
+const problemLookupByProblemId = {
+  $lookup: {
+    from: "problems",
+    localField: "_id.problemId",
+    foreignField: "id",
+    as: "problemDoc",
   },
 };
+
+const problemLookupById = {
+  $lookup: {
+    from: "problems",
+    localField: "_id",
+    foreignField: "id",
+    as: "problemDoc",
+  },
+};
+
+const unwindProblemDoc = {
+  $unwind: {
+    path: "$problemDoc",
+    preserveNullAndEmptyArrays: true,
+  },
+};
+
+const difficultyPointsPipeline = [
+  problemLookupByProblemId,
+  unwindProblemDoc,
+  difficultyFromProblemStage,
+];
+
+const uniqueProblemDifficultyPipeline = [
+  problemLookupById,
+  unwindProblemDoc,
+  difficultyFromProblemStage,
+];
 
 export const aggregateLeaderboard = async (Submission) => {
   return Submission.aggregate([
@@ -117,7 +77,7 @@ export const aggregateLeaderboard = async (Submission) => {
         firstAcceptedAt: { $min: "$createdAt" },
       },
     },
-    difficultyPointsStage,
+    ...difficultyPointsPipeline,
     {
       $group: {
         _id: "$_id.userEmail",
@@ -258,7 +218,7 @@ export const aggregateUserStats = async (Submission, userEmail) => {
               _id: "$problemId",
             },
           },
-          uniqueProblemDifficultyStage,
+          ...uniqueProblemDifficultyPipeline,
           {
             $group: {
               _id: null,

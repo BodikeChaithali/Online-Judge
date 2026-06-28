@@ -1,19 +1,33 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { saveDraft, getDraft } from "../services/draftService";
-import { starterCode } from "../data/problems";
+import { defaultStarterCode } from "../constants/defaultStarterCode";
 
 const AUTOSAVE_DELAY_MS = 1000;
+const LANGUAGES = ["Java", "C", "CPP", "Python"];
 
-export function useDraft(user, problemId) {
+export function useDraft(user, problemId, starterCode) {
+  const getStarter = useCallback(
+    (lang) => starterCode?.[lang] ?? defaultStarterCode[lang] ?? "",
+    [starterCode],
+  );
+
   const [language, setLanguage] = useState("Java");
-  const [code, setCode] = useState(starterCode["Java"]);
+  const [code, setCode] = useState(() => defaultStarterCode.Java);
   const [saveStatus, setSaveStatus] = useState("");
   const [draftsCache, setDraftsCache] = useState({});
 
   const autoSaveTimer = useRef(null);
   const isLoadingDraft = useRef(false);
+
   useEffect(() => {
-    if (!user || !problemId) return;
+    if (!problemId) return;
+
+    if (!user) {
+      setDraftsCache({});
+      setLanguage("Java");
+      setCode(getStarter("Java"));
+      return;
+    }
 
     const loadDraft = async () => {
       try {
@@ -22,13 +36,17 @@ export function useDraft(user, problemId) {
         if (data.draft) {
           const { lastLanguage, drafts } = data.draft;
           const loadedDrafts = {};
-          ["Java", "C", "CPP", "Python"].forEach((lang) => {
+          LANGUAGES.forEach((lang) => {
             if (drafts[lang] !== undefined) loadedDrafts[lang] = drafts[lang];
           });
           setDraftsCache(loadedDrafts);
           const resolvedLanguage = lastLanguage || "Java";
           setLanguage(resolvedLanguage);
-          setCode(drafts[resolvedLanguage] ?? starterCode[resolvedLanguage]);
+          setCode(drafts[resolvedLanguage] ?? getStarter(resolvedLanguage));
+        } else {
+          setDraftsCache({});
+          setLanguage("Java");
+          setCode(getStarter("Java"));
         }
       } catch (err) {
         console.error(err);
@@ -37,7 +55,7 @@ export function useDraft(user, problemId) {
       }
     };
     loadDraft();
-  }, [user, problemId]);
+  }, [user, problemId, getStarter]);
 
   useEffect(() => {
     return () => {
@@ -80,7 +98,7 @@ export function useDraft(user, problemId) {
     const newLanguage = e.target.value;
     setDraftsCache((prev) => ({ ...prev, [language]: code }));
     setLanguage(newLanguage);
-    const cachedCode = draftsCache[newLanguage] ?? starterCode[newLanguage];
+    const cachedCode = draftsCache[newLanguage] ?? getStarter(newLanguage);
     setCode(cachedCode);
     if (user && problemId) {
       saveDraft(Number(problemId), newLanguage, cachedCode, newLanguage).catch(
@@ -90,7 +108,7 @@ export function useDraft(user, problemId) {
   };
 
   const handleReset = (currentLanguage) => {
-    const resetCode = starterCode[currentLanguage];
+    const resetCode = getStarter(currentLanguage);
     setCode(resetCode);
     setDraftsCache((prev) => ({ ...prev, [currentLanguage]: resetCode }));
     triggerAutoSave(currentLanguage, resetCode);

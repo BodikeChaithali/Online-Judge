@@ -2,7 +2,6 @@ import Submission from "../models/submissionModel.js";
 import {
   aggregateLeaderboard,
   aggregateUserStats,
-  aggregateProblemStatuses,
   findUserRank,
 } from "../utils/leaderboardUtils.js";
 
@@ -38,21 +37,6 @@ export const getProfileStats = async (req, res) => {
       compilationError: stats.compilationError,
       acceptanceRate: stats.acceptanceRate,
     });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-export const getProblemStatuses = async (req, res) => {
-  try {
-    const statuses = await aggregateProblemStatuses(
-      Submission,
-      req.user.email,
-    );
-
-    return res.status(200).json(statuses);
   } catch (error) {
     return res.status(500).json({
       message: error.message,

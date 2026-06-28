@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { problems } from "../data/problems";
+import { getProblemById } from "../services/problemsService";
 import { runCode } from "../services/compilerService";
 import { useDraft } from "../hooks/useDraft";
 import ProblemTabs from "../components/problemDetails/ProblemTabs";
@@ -17,8 +17,10 @@ import "./css/ProblemDetails.css";
 export default function ProblemDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const problem = problems.find((p) => p.id === Number(id));
   const { user, loading: authLoading } = useAuth();
+  const [problem, setProblem] = useState(null);
+  const [problemLoading, setProblemLoading] = useState(true);
+  const [problemError, setProblemError] = useState("");
   const {
     language,
     code,
@@ -26,7 +28,7 @@ export default function ProblemDetails() {
     handleCodeChange,
     handleLanguageChange,
     handleReset,
-  } = useDraft(user, id);
+  } = useDraft(user, id, problem?.starterCode);
   const [output, setOutput] = useState(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,38 @@ export default function ProblemDetails() {
   const { aiReview, reviewLoading, reviewMessage, handleAIReview } =
     useAIReview(user, language, code, problem?.title, setActiveTab);
 
-  if (authLoading) {
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchProblem = async () => {
+      setProblemLoading(true);
+      setProblemError("");
+
+      try {
+        const data = await getProblemById(id);
+        if (!cancelled) {
+          setProblem(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProblem(null);
+          setProblemError(err.message || "Unable to load problem");
+        }
+      } finally {
+        if (!cancelled) {
+          setProblemLoading(false);
+        }
+      }
+    };
+
+    fetchProblem();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (authLoading || problemLoading) {
     return (
       <>
         <Navbar />
@@ -60,11 +93,13 @@ export default function ProblemDetails() {
     );
   }
 
-  if (!problem) {
+  if (problemError || !problem) {
     return (
       <>
         <Navbar />
-        <div className="not-found">Problem Not Found</div>
+        <div className="not-found">
+          {problemError || "Problem Not Found"}
+        </div>
       </>
     );
   }
