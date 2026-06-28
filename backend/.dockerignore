@@ -1,0 +1,6 @@
+node_modules
+.env
+.git
+.gitignore
+src/compiler/Jobs
+npm-debug.log

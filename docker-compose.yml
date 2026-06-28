@@ -1,0 +1,66 @@
+services:
+
+  mongodb:
+    image: mongo:8
+    container_name: onlinejudge-mongodb
+
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongo-data:/data/db
+
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: onlinejudge-backend
+
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./backend/.env
+
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: onlinejudge-frontend
+
+    restart: unless-stopped
+
+    ports:
+      - "5173:5173"
+
+    env_file:
+      - ./frontend/.env
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
