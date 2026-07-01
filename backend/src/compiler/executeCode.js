@@ -1,79 +1,61 @@
-import fs from "fs";
-import { exec } from "child_process";
 import path from "path";
+import fs from "fs";
 
-export const executeCode = (language, filePath, input = "") => {
-  const jobDir = path.dirname(filePath);
-  const inputPath = path.join(jobDir, "input.txt");
+import { createSandboxContainer } from "./containerManager.js";
+import { uploadFiles } from "./uploadFiles.js";
+import { execCommand } from "./execCommand.js";
 
-  fs.writeFileSync(inputPath, input);
+export const executeCode = async (language, filePath, input = "") => {
+  const container = await createSandboxContainer();
 
-  let command = "";
+  const inputPath = path.join(path.dirname(filePath), "input.txt");
+
+  await fs.promises.writeFile(inputPath, input);
+
+  let fileName;
+  let command;
 
   switch (language) {
     case "py":
-      command = "python3 /code/code.py < /code/input.txt";
+      fileName = "code.py";
+      command = "python3 code.py < input.txt";
       break;
 
     case "c":
-      command =
-        "gcc /code/code.c -o /code/a.out && /code/a.out < /code/input.txt";
+      fileName = "code.c";
+      command = "gcc code.c -o main && ./main < input.txt";
       break;
 
     case "cpp":
-      command =
-        "g++ /code/code.cpp -o /code/a.out && /code/a.out < /code/input.txt";
+      fileName = "code.cpp";
+      command = "g++ code.cpp -o main && ./main < input.txt";
       break;
 
     case "java":
-      command =
-        "javac /code/Main.java && java -cp /code Main < /code/input.txt";
+      fileName = "Main.java";
+      command = "javac Main.java && java Main < input.txt";
       break;
 
     default:
-      return Promise.reject(new Error("Unsupported language"));
+      throw new Error("Unsupported language");
   }
 
-  const hostProjectPath = process.env.HOST_PROJECT_PATH;
-
-  if (!hostProjectPath) {
-    return Promise.reject(
-      new Error("HOST_PROJECT_PATH environment variable not configured"),
-    );
-  }
-
-  const hostJobDir = jobDir.replace("/app", hostProjectPath);
-
-  const dockerCommand = `docker run --rm \
--v "${hostJobDir}:/code:rw" \
--w /code \
---network none \
---memory=256m \
---cpus=1 \
---pids-limit=100 \
---cap-drop=ALL \
---security-opt=no-new-privileges \
---tmpfs /tmp:size=64m \
-onlinejudge-sandbox \
-bash -c '${command}'`;
-
-  return new Promise((resolve, reject) => {
-    exec(
-      dockerCommand,
+  try {
+    await uploadFiles(container, [
       {
-        timeout: 5000,
+        name: fileName,
+        path: filePath,
       },
-      (error, stdout, stderr) => {
-        if (error?.killed) {
-          return reject(new Error("Time Limit Exceeded"));
-        }
-
-        if (error) {
-          return reject(new Error(stderr || error.message));
-        }
-
-        resolve(stdout.trim());
+      {
+        name: "input.txt",
+        path: inputPath,
       },
-    );
-  });
+    ]);
+
+    const output = await execCommand(container, command);
+
+    return output;
+  } finally {
+    await container.remove({ force: true }).catch(() => {});
+  }
 };
