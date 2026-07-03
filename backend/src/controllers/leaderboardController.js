@@ -7,9 +7,7 @@ export const getLeaderboard = async (req, res) => {
 
     const leaderboard = results.map((entry, index) => ({
       rank: index + 1,
-      userId: entry.userId,
       username: entry.username || "Anonymous",
-      email: entry.userEmail,
       score: entry.score,
       solved: entry.solved,
     }));

@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getLeaderboard = async () => {
-  const response = await fetch(`${API_URL}/leaderboard`);
+  const response = await fetch(`${API_URL}/api/leaderboard`);
 
   const result = await response.json();
 

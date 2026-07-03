@@ -114,13 +114,6 @@ export const aggregateLeaderboard = async (Submission) => {
       $project: {
         _id: 0,
         userEmail: "$_id",
-        userId: {
-          $cond: {
-            if: { $ifNull: ["$user._id", false] },
-            then: { $toString: "$user._id" },
-            else: null,
-          },
-        },
         username: {
           $cond: {
             if: {

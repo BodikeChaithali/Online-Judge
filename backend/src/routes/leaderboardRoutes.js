@@ -3,7 +3,6 @@ import { getLeaderboard } from "../controllers/leaderboardController.js";
 
 const router = express.Router();
 
-router.get("/leaderboard", getLeaderboard);
 router.get("/api/leaderboard", getLeaderboard);
 
 export default router;
