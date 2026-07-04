@@ -21,10 +21,22 @@ export const runCode = async (req, res) => {
       output,
     });
   } catch (err) {
+    let type = "ERROR";
+
+    if (err.message === "Time Limit Exceeded") {
+      type = "TLE";
+    } else if (err.message === "Memory Limit Exceeded") {
+      type = "MLE";
+    } else if (err.message === "Internal Error") {
+      type = "INTERNAL";
+    } else if (err.message === "Runtime Error") {
+      type = "RUNTIME";
+    }
+
     return res.status(400).json({
       success: false,
       error: err.message || String(err),
-      type: err.message === "Time Limit Exceeded" ? "TLE" : "ERROR",
+      type,
     });
   } 
   finally {

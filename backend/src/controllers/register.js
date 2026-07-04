@@ -8,7 +8,14 @@ const registerHandler = async (req, res) => {
         if(!firstName || !lastName || !email || !password) {
             return res.status(400).json({message: "All fields are required"});
         }
-        if(!validator.isEmail(email)) {
+        const trimmedFirstName = firstName.trim();
+        const trimmedLastName = lastName.trim();
+        const trimmedEmail = email.trim();
+        const nameRegex = /^[A-Za-z]+$/;
+        if(!nameRegex.test(trimmedFirstName) || !nameRegex.test(trimmedLastName)) {
+            return res.status(400).json({message: "First name and last name must contain only letters"});
+        }
+        if(!validator.isEmail(trimmedEmail)) {
             return res.status(400).json({message: "Invalid email format"});
         }
         if (!validator.isStrongPassword(password)) {
@@ -16,7 +23,7 @@ const registerHandler = async (req, res) => {
                 message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one symbol"
             });
         }
-        const existingUser = await AuthUser.findOne({ email });
+        const existingUser = await AuthUser.findOne({ email: trimmedEmail });
         if(existingUser) {
             return res.status(400).json({message: "Email already exists"});
         }
@@ -24,9 +31,9 @@ const registerHandler = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new AuthUser({
-            firstName,
-            lastName,
-            email,
+            firstName: trimmedFirstName,
+            lastName: trimmedLastName,
+            email: trimmedEmail,
             password: hashedPassword
         });
 

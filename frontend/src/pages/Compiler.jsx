@@ -28,6 +28,12 @@ export default function Compiler() {
     } catch (err) {
       if (err.type === "TLE") {
         setOutput("⏱ Time Limit Exceeded");
+      } else if (err.type === "MLE") {
+        setOutput("💾 Memory Limit Exceeded");
+      } else if (err.type === "INTERNAL") {
+        setOutput("⚠️ Internal Error");
+      } else if (err.type === "RUNTIME") {
+        setOutput("⚠️ Runtime Error");
       } else {
         setOutput(err.message);
       }

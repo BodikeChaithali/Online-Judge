@@ -38,22 +38,22 @@ const updateHandler = async (req, res) => {
         message: "Provide at least one field to update",
       });
     }
-
-    if (newEmail) {
-      if (!validator.isEmail(newEmail)) {
+    const trimmedNewEmail = newEmail ? newEmail.trim() : null;
+    if (trimmedNewEmail) {
+      if (!validator.isEmail(trimmedNewEmail)) {
         return res.status(400).json({
           message: "Invalid email format",
         });
       }
 
-      if (newEmail === user.email) {
+      if (trimmedNewEmail === user.email) {
         return res.status(400).json({
           message: "New email must be different",
         });
       }
 
       const existingUser = await AuthUser.findOne({
-        email: newEmail,
+        email: trimmedNewEmail,
       });
 
       if (existingUser) {
@@ -62,7 +62,7 @@ const updateHandler = async (req, res) => {
         });
       }
 
-      user.email = newEmail;
+      user.email = trimmedNewEmail;
     }
 
     if (newPassword) {
@@ -84,12 +84,12 @@ const updateHandler = async (req, res) => {
 
     await user.save();
 
-    if (newEmail) {
+    if (trimmedNewEmail) {
       await Draft.updateMany(
         { email },
         {
           $set: {
-            email: newEmail,
+            email: trimmedNewEmail,
           },
         },
       );
@@ -98,7 +98,7 @@ const updateHandler = async (req, res) => {
         { userEmail: email },
         {
           $set: {
-            userEmail: newEmail,
+            userEmail: trimmedNewEmail,
           },
         },
       );
@@ -107,7 +107,7 @@ const updateHandler = async (req, res) => {
         { userEmail: email },
         {
           $set: {
-            userEmail: newEmail,
+            userEmail: trimmedNewEmail,
           },
         },
       );

@@ -68,12 +68,23 @@ async function evaluateSubmission(submission) {
     if (msg.includes("Time Limit Exceeded")) {
       submission.status = "Time Limit Exceeded";
       submission.verdict = "Time Limit Exceeded";
-    } else if (msg.includes("Exception")) {
+    } else if (msg.includes("Memory Limit Exceeded")) {
+      submission.status = "Memory Limit Exceeded";
+      submission.verdict = "Memory Limit Exceeded";
+    } else if (
+      msg.includes("Exception") ||
+      msg.includes("Traceback") ||
+      msg.includes("Segmentation fault") ||
+      msg.includes("Floating point exception")
+    ) {
       submission.status = "Runtime Error";
       submission.verdict = "Runtime Error";
-    } else {
+    } else if (msg.includes("error")) {
       submission.status = "Compilation Error";
       submission.verdict = "Compilation Error";
+    } else {
+      submission.status = "Internal Error";
+      submission.verdict = "Internal Error";
     }
     await submission.save();
   } finally {

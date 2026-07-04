@@ -55,8 +55,14 @@ export default function ProblemConsole({
           />
         ) : output === null ? (
           <pre className="output-none">Run your code to see output.</pre>
-        ) : output === "⏱ Time Limit Exceeded"? (
+        ) : output === "⏱ Time Limit Exceeded" ? (
           <pre className="output-none">⏱ Time Limit Exceeded</pre>
+        ) : output === "💾 Memory Limit Exceeded" ? (
+          <pre className="output-none">💾 Memory Limit Exceeded</pre>
+        ) : output === "⚠️ Internal Error" ? (
+          <pre className="output-none">⚠️ Internal Error</pre>
+        ) : output === "⚠️ Runtime Error" ? (
+          <pre className="output-none">⚠️ Runtime Error</pre>
         ) : (
           <pre>{output}</pre>
         )}
