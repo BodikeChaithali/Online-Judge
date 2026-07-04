@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const registerUser = async (userData) => {
-  const response = await fetch(`${API_URL}/register`, {
+  const response = await fetch(`${API_URL}/api/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,7 +15,7 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async (email, password) => {
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await fetch(`${API_URL}/api/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const loginUser = async (email, password) => {
 };
 
 export const getCurrentUser = async () => {
-  const response = await fetch(`${API_URL}/me`, {
+  const response = await fetch(`${API_URL}/api/me`, {
     credentials: "include",
   });
 
@@ -42,7 +42,7 @@ export const getCurrentUser = async () => {
 };
 
 export const logoutUser = async () => {
-  const response = await fetch(`${API_URL}/logout`, {
+  const response = await fetch(`${API_URL}/api/logout`, {
     method: "POST",
     credentials: "include",
   });
@@ -51,7 +51,7 @@ export const logoutUser = async () => {
 };
 
 export const updateUser = async (userData) => {
-  const response = await fetch(`${API_URL}/update`, {
+  const response = await fetch(`${API_URL}/api/update`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export const updateUser = async (userData) => {
 };
 
 export const deleteUser = async (password) => {
-  const response = await fetch(`${API_URL}/delete`, {
+  const response = await fetch(`${API_URL}/api/delete`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

@@ -5,8 +5,8 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/draft", authMiddleware, saveDraft);
-router.get("/draft/:problemId", authMiddleware, getDraft);
-router.delete("/draft", authMiddleware, deleteLanguageDraft);
+router.post("/api/draft", authMiddleware, saveDraft);
+router.get("/api/draft/:problemId", authMiddleware, getDraft);
+router.delete("/api/draft", authMiddleware, deleteLanguageDraft);
 
 export default router;

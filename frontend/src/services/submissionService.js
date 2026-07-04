@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const submitCode = async (data) => {
-  const response = await fetch(`${API_URL}/submissions`, {
+  const response = await fetch(`${API_URL}/api/submissions`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -20,7 +20,7 @@ export const submitCode = async (data) => {
 };
 
 export const getProblemSubmissions = async (problemId) => {
-  const response = await fetch(`${API_URL}/submissions/problem/${problemId}`, {
+  const response = await fetch(`${API_URL}/api/submissions/problem/${problemId}`, {
     credentials: "include",
   });
 
@@ -34,7 +34,7 @@ export const getProblemSubmissions = async (problemId) => {
 };
 
 export const getSubmission = async (id) => {
-  const response = await fetch(`${API_URL}/submissions/${id}`, {
+  const response = await fetch(`${API_URL}/api/submissions/${id}`, {
     credentials: "include",
   });
 

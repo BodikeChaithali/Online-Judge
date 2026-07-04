@@ -4,5 +4,5 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 
 const router = express.Router();
-router.post("/ai-review",authMiddleware, generateReview);
+router.post("/api/ai-review",authMiddleware, generateReview);
 export default router;

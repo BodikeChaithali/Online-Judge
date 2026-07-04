@@ -17,11 +17,11 @@ router.get('/',(req,res) => {
     });
 });
 
-router.post('/register', registerHandler);
-router.post('/login', loginHandler);
-router.put('/update',authMiddleware, updateHandler);
-router.delete('/delete',authMiddleware, deleteHandler);
-router.get("/me", authMiddleware, meHandler);
-router.post("/logout", authMiddleware, logoutHandler);
+router.post('/api/register', registerHandler);
+router.post('/api/login', loginHandler);
+router.put('/api/update',authMiddleware, updateHandler);
+router.delete('/api/delete',authMiddleware, deleteHandler);
+router.get("/api/me", authMiddleware, meHandler);
+router.post("/api/logout", authMiddleware, logoutHandler);
 
 export default router;

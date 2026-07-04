@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getAIReview = async (code, language, problemTitle) => {
-  const response = await fetch(`${API_URL}/ai-review`, {
+  const response = await fetch(`${API_URL}/api/ai-review`, {
     method: "POST",
     credentials: "include",
     headers: {

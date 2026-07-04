@@ -8,7 +8,7 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/submissions", authMiddleware, createSubmission);
-router.get("/submissions/problem/:problemId", authMiddleware, getProblemSubmissions);
-router.get("/submissions/:id", authMiddleware, getSubmission);
+router.post("/api/submissions", authMiddleware, createSubmission);
+router.get("/api/submissions/problem/:problemId", authMiddleware, getProblemSubmissions);
+router.get("/api/submissions/:id", authMiddleware, getSubmission);
 export default router;

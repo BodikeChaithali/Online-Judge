@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const saveDraft = async (problemId, language, code, lastLanguage) => {
-  const response = await fetch(`${API_URL}/draft`, {
+  const response = await fetch(`${API_URL}/api/draft`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -25,7 +25,7 @@ export const saveDraft = async (problemId, language, code, lastLanguage) => {
 };
 
 export const getDraft = async (problemId) => {
-  const response = await fetch(`${API_URL}/draft/${problemId}`, {
+  const response = await fetch(`${API_URL}/api/draft/${problemId}`, {
     credentials: "include",
   });
 
@@ -39,7 +39,7 @@ export const getDraft = async (problemId) => {
 };
 
 export const deleteLanguageDraft = async (problemId, language) => {
-  const response = await fetch(`${API_URL}/draft`, {
+  const response = await fetch(`${API_URL}/api/draft`, {
     method: "DELETE",
     credentials: "include",
     headers: {

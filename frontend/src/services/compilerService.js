@@ -8,7 +8,7 @@ export const runCode = async (language, code, input = "") => {
     Python: "py",
   };
 
-  const response = await fetch(`${API_URL}/run`, {
+  const response = await fetch(`${API_URL}/api/run`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
