@@ -331,10 +331,8 @@
 }
 
 .submission-status {
-  height: 180px;
-  background: #161b22;
-  border-radius: 8px;
-  padding: 16px;
+  background: #0f172a;
+  padding: 18px;
   overflow-y: auto;
 }
 
@@ -576,4 +574,14 @@
   justify-content: center;
   height: 100%;
   font-style: italic;
+}
+
+.status-badge.memory-limit-exceeded {
+  background: rgba(168, 85, 247, 0.18);
+  color: #a855f7;
+}
+
+.status-badge.internal-error {
+  background: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
 }

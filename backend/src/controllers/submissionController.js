@@ -23,7 +23,7 @@ export const createSubmission = async (req, res) => {
       status: "Running",
       verdict: "Running",
     });
-    evaluateSubmission(submission);
+    void evaluateSubmission(submission);
     return res.status(201).json(submission);
   } catch (error) {
     return res.status(500).json({
@@ -64,22 +64,39 @@ async function evaluateSubmission(submission) {
     submission.verdict = "Accepted";
     await submission.save();
   } catch (error) {
-    const msg = error.message || "";
-    if (msg.includes("Time Limit Exceeded")) {
+    const msg = (error.message || "").toLowerCase();
+    if (msg.includes("time limit exceeded")) {
       submission.status = "Time Limit Exceeded";
       submission.verdict = "Time Limit Exceeded";
-    } else if (msg.includes("Memory Limit Exceeded")) {
+    } else if (
+      msg.includes("memory limit exceeded") ||
+      msg.includes("outofmemoryerror") ||
+      msg.includes("java heap space")
+    ) {
       submission.status = "Memory Limit Exceeded";
       submission.verdict = "Memory Limit Exceeded";
     } else if (
-      msg.includes("Exception") ||
-      msg.includes("Traceback") ||
-      msg.includes("Segmentation fault") ||
-      msg.includes("Floating point exception")
+      msg.includes("runtime error") ||
+      msg.includes("exception") ||
+      msg.includes("segmentation fault") ||
+      msg.includes("core dumped") ||
+      msg.includes("floating point exception") ||
+      msg.includes("zerodivisionerror") ||
+      msg.includes("indexerror") ||
+      msg.includes("valueerror") ||
+      msg.includes("typeerror") ||
+      msg.includes("nameerror")
     ) {
       submission.status = "Runtime Error";
       submission.verdict = "Runtime Error";
-    } else if (msg.includes("error")) {
+    } else if (
+      msg.includes("error:") ||
+      msg.includes("syntaxerror") ||
+      msg.includes("indentationerror") ||
+      msg.includes("importerror") ||
+      msg.includes("modulenotfounderror") ||
+      msg.includes("compilation")
+    ) {
       submission.status = "Compilation Error";
       submission.verdict = "Compilation Error";
     } else {

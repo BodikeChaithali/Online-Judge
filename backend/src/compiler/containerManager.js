@@ -10,6 +10,7 @@ export const createSandboxContainer = async () => {
     HostConfig: {
       NetworkMode: "none",
       Memory: 256 * 1024 * 1024,
+      MemorySwap: 256 * 1024 * 1024,
       NanoCpus: 1_000_000_000,
       PidsLimit: 100,
       CapDrop: ["ALL"],

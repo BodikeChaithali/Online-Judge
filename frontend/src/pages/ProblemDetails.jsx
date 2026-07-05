@@ -115,11 +115,9 @@ export default function ProblemDetails() {
       if (err.type === "TLE") {
         setOutput("⏱ Time Limit Exceeded");
       } else if (err.type === "MLE") {
-        setOutput("💾 Memory Limit Exceeded");
+        setOutput("Memory Limit Exceeded");
       } else if (err.type === "INTERNAL") {
-        setOutput("⚠️ Internal Error");
-      } else if (err.type === "RUNTIME") {
-        setOutput("⚠️ Runtime Error");
+        setOutput("Internal Error");
       } else {
         setOutput(err.message);
       }

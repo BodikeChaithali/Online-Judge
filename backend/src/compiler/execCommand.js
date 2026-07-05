@@ -1,6 +1,6 @@
 import { Writable } from "stream";
 
-export const execCommand = async (container, command, timeout = 5000) => {
+export const execCommand = async (container, command) => {
   const exec = await container.exec({
     Cmd: ["bash", "-c", command],
     AttachStdout: true,
@@ -20,26 +20,29 @@ export const execCommand = async (container, command, timeout = 5000) => {
 
   container.modem.demuxStream(stream, writable, writable);
 
-  const executionPromise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     stream.on("end", async () => {
       try {
         const inspect = await exec.inspect();
-        if (inspect.ExitCode === 137) {
+        const exitCode = inspect.ExitCode;
+
+        if (exitCode === 0) {
+          return resolve(output.trim());
+        }
+
+        if (exitCode === 124) {
+          return reject(new Error("Time Limit Exceeded"));
+        }
+
+        if (exitCode === 137) {
           return reject(new Error("Memory Limit Exceeded"));
         }
-        if (inspect.ExitCode === 139) {
-          return reject(new Error("Runtime Error"));  
+
+        if (output.trim() === "") {
+          return reject(new Error("Internal Error"));
         }
 
-        if (inspect.ExitCode !== 0) {
-          if (output.trim() === "") {
-            return reject(new Error("Internal Error"));
-          }
-
-          return reject(new Error(output.trim()));
-        }
-
-        resolve(output.trim());
+        return reject(new Error(output.trim()));
       } catch (err) {
         reject(err);
       }
@@ -47,16 +50,4 @@ export const execCommand = async (container, command, timeout = 5000) => {
 
     stream.on("error", reject);
   });
-
-  const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(async () => {
-      try {
-        await container.kill();
-      } catch {}
-
-      reject(new Error("Time Limit Exceeded"));
-    }, timeout);
-  });
-
-  return Promise.race([executionPromise, timeoutPromise]);
 };

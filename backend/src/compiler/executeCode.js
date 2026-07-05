@@ -18,22 +18,22 @@ export const executeCode = async (language, filePath, input = "") => {
   switch (language) {
     case "py":
       fileName = "code.py";
-      command = "python3 code.py < input.txt";
+      command = "timeout 5s bash -c 'python3 code.py < input.txt'";
       break;
 
     case "c":
       fileName = "code.c";
-      command = "gcc code.c -o main && ./main < input.txt";
+      command = "timeout 5s bash -c 'gcc code.c -o main && ./main < input.txt'";
       break;
 
     case "cpp":
       fileName = "code.cpp";
-      command = "g++ code.cpp -o main && ./main < input.txt";
+      command = "timeout 5s bash -c 'g++ code.cpp -o main && ./main < input.txt'";
       break;
 
     case "java":
       fileName = "Main.java";
-      command = "javac Main.java && java Main < input.txt";
+      command = "timeout 5s bash -c 'javac Main.java && java Main < input.txt'";
       break;
 
     default:

@@ -17,14 +17,18 @@ export default function ProblemConsole({
 
   if (showSubmissionStatus && submissionStatus) {
     return (
-      <div className="submission-status">
-        <h3>Submission Status</h3>
-        <p>
-          <strong>Status:</strong> {submissionStatus.status}
-        </p>
-        <p>
-          <strong>Verdict:</strong> {submissionStatus.verdict || "-"}
-        </p>
+      <div className="bottom-panel">
+        <div className="console-header">
+          <span>Submission Status</span>
+        </div>
+        <div className="console-body submission-status">
+          <p>
+            <strong>Status:</strong> {submissionStatus.status}
+          </p>
+          <p>
+            <strong>Verdict:</strong> {submissionStatus.verdict || "-"}
+          </p>
+        </div>
       </div>
     );
   }
@@ -55,14 +59,10 @@ export default function ProblemConsole({
           />
         ) : output === null ? (
           <pre className="output-none">Run your code to see output.</pre>
-        ) : output === "⏱ Time Limit Exceeded" ? (
-          <pre className="output-none">⏱ Time Limit Exceeded</pre>
-        ) : output === "💾 Memory Limit Exceeded" ? (
-          <pre className="output-none">💾 Memory Limit Exceeded</pre>
-        ) : output === "⚠️ Internal Error" ? (
-          <pre className="output-none">⚠️ Internal Error</pre>
-        ) : output === "⚠️ Runtime Error" ? (
-          <pre className="output-none">⚠️ Runtime Error</pre>
+        ) : output === "⏱ Time Limit Exceeded" ||
+          output === "Memory Limit Exceeded" ||
+          output === "Internal Error" ? (
+          <pre className="output-none">{output}</pre>
         ) : (
           <pre>{output}</pre>
         )}
