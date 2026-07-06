@@ -1,162 +1,200 @@
-# OnlineJudge
+# 🚀 Online Judge
 
-A full-stack online coding judge platform for competitive programming. Practice coding problems, improve problem-solving skills, participate in contests, and track your progress.
+An end-to-end coding platform that enables users to solve programming problems, execute code securely in isolated Docker containers, submit solutions, receive AI-powered code analysis, and track their progress through leaderboards and personal statistics.
+
+## ✨ Features
+
+### 🔐 Authentication
+
+* User registration and login
+* JWT-based authentication
+* Protected routes
+* Profile management
+
+### 💻 Coding Environment
+
+* Browse coding problems
+* Filter problems by difficulty
+* Rich code editor
+* Support for custom input
+* Automatic draft saving
+* Multi-language support
+
+### ⚡ Code Execution
+
+* Secure Docker-based sandbox
+* Instant code execution
+* Runtime output display
+* Compilation and runtime error handling
+
+### 📤 Submissions
+
+* Submit solutions
+* View submission history
+* Track verdicts
+* Monitor execution status
+
+### 🤖 AI Code Review
+
+* Time complexity estimation
+* Space complexity estimation
+* Code quality suggestions
+* Edge-case detection
+
+### 🏆 Leaderboard & Profile
+
+* Global leaderboard
+* Difficulty-based scoring
+* User statistics
+* Solved problems overview
 
 ---
 
-# 📋 Tech Stack
+# 🛠️ Tech Stack
 
 ## Frontend
 
-* **React** - UI library
-* **Vite** - Build tool and development server
-* **React Router** - Routing
-* **CSS** - Styling
+* React
+* Vite
+* React Router
+* CSS
 
 ## Backend
 
-* **Node.js** - JavaScript runtime
-* **Express.js** - Web framework
-* **MongoDB** - Database
-* **Mongoose** - MongoDB ODM
-* **CORS** - Cross-origin resource sharing
-* **dotenv** - Environment variable management
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* Google Gemini API
 
 ## Code Execution
 
-* **Docker** - Secure sandboxed code execution
-* **Ubuntu 22.04** - Sandbox environment
-* **GCC**
-* **G++**
-* **OpenJDK 17**
-* **Python 3**
+* Docker
+* Ubuntu 22.04
+* GCC
+* G++
+* OpenJDK 17
+* Python 3
+
+## Deployment
+
+* AWS EC2
+* Docker
+* Docker Compose
 
 ---
 
-# 📋 Prerequisites
+# 🏗️ Project Structure
+
+```text
+Online-Judge/
+│
+├── frontend/
+├── backend/
+├── sandbox/
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
 
 * Node.js (v22 or later)
 * npm
 * Docker
 * Docker Compose
-* MongoDB (only if running without Docker)
 
-> **Important**
->
-> Docker **must** be installed and the Docker daemon must be running before using the compiler.
->
-> The backend launches sandbox containers using the Docker CLI.
+Docker must be installed and running before using the code execution feature.
 
 ---
 
-# 🚀 Running the Project
+# Local Development
 
-There are two supported ways to run the project.
-
----
-
-## Option 1 — Local Development
-
-### Clone the Repository
+## Clone the Repository
 
 ```bash
 git clone https://github.com/BodikeChaithali/Online-Judge.git
+
 cd Online-Judge
 ```
 
-### Backend
+## Backend
 
 ```bash
 cd backend
+
 npm install
+
 cp .env.example .env
+
 npm start
 ```
 
-Runs at:
+Runs on:
 
 ```text
 http://localhost:3000
 ```
 
-### Frontend
+---
 
-Open another terminal.
+## Frontend
+
+Open a new terminal.
 
 ```bash
 cd frontend
+
 npm install
+
 cp .env.example .env
+
 npm run dev
 ```
 
-Runs at:
+Runs on:
 
 ```text
 http://localhost:5173
 ```
 
-### Build the Sandbox Image
+---
+
+## Build Sandbox Image
 
 ```bash
 docker build -t onlinejudge-sandbox ./sandbox
 ```
-
-This only needs to be rebuilt if the `sandbox/Dockerfile` changes.
-
-### Start Docker
-
-Ensure Docker Desktop (Windows/macOS) or the Docker daemon (Linux) is running before using the **Run Code** feature.
 
 ---
 
-## Option 2 — Docker Compose
+# Docker Compose
 
-### Clone Repository
-
-```bash
-git clone https://github.com/BodikeChaithali/Online-Judge.git
-cd Online-Judge
-```
-
-### Configure Environment Variables
+Copy environment files.
 
 ```bash
 cp backend/.env.example backend/.env
+
 cp frontend/.env.example frontend/.env
 ```
 
-### Build the Sandbox
+Build the sandbox.
 
 ```bash
 docker build -t onlinejudge-sandbox ./sandbox
 ```
 
-### Start Application
+Start the application.
 
 ```bash
 docker compose up --build
 ```
 
-This starts:
-
-* MongoDB
-* Backend
-* Frontend
-
-Backend:
-
-```text
-http://localhost:3000
-```
-
-Frontend:
-
-```text
-http://localhost:5173
-```
-
-### Stop
+Stop all services.
 
 ```bash
 docker compose down
@@ -164,50 +202,13 @@ docker compose down
 
 ---
 
-# 🐳 Docker Images
+# 🌐 Default URLs
 
-Docker Hub images:
-
-* `bodikechaithali/onlinejudge-backend`
-* `bodikechaithali/onlinejudge-frontend`
-* `bodikechaithali/onlinejudge-sandbox`
-
----
-
-# 🔒 Sandbox Security
-
-Each submission executes inside an isolated Docker container with:
-
-* No network access
-* Memory limit
-* CPU limit
-* Process limit
-* Dropped Linux capabilities
-* No new privileges
-* Temporary filesystem
-* Non-root execution
-
----
-
-# 🌍 Default URLs
-
-Frontend
-
-```text
-http://localhost:5173
-```
-
-Backend
-
-```text
-http://localhost:3000
-```
-
-MongoDB
-
-```text
-mongodb://localhost:27017
-```
+| Service  | URL                       |
+| -------- | ------------------------- |
+| Frontend | http://localhost:5173     |
+| Backend  | http://localhost:3000     |
+| MongoDB  | mongodb://localhost:27017 |
 
 ---
 
@@ -220,26 +221,7 @@ PORT=
 MONGO_URI=
 JWT_SECRET=
 HOST_PROJECT_PATH=
-```
-
-**HOST_PROJECT_PATH Example**
-
-Linux
-
-```text
-/home/username/Online-Judge/backend
-```
-
-macOS
-
-```text
-/Users/username/Online-Judge/backend
-```
-
-Windows (Docker Desktop)
-
-```text
-C:\Users\username\Online-Judge\backend
+GEMINI_API_KEY=
 ```
 
 ## Frontend
@@ -250,13 +232,69 @@ VITE_API_URL=
 
 ---
 
-# 📝 Notes
+# 🌍 Supported Languages
 
-* The compiler requires the `onlinejudge-sandbox` Docker image.
-* Docker must be running before executing code.
-* If `sandbox/Dockerfile` changes, rebuild the sandbox image.
-* If backend or frontend Dockerfiles change, rebuild using:
+* C
+* C++
+* Java
+* Python
 
-```bash
-docker compose up --build
-```
+---
+
+# 🔒 Secure Code Execution
+
+Every code submission runs inside an isolated Docker container with multiple security restrictions.
+
+* Network disabled
+* CPU limits
+* Memory limits
+* Process limits
+* Non-root execution
+* Dropped Linux capabilities
+* Temporary filesystem
+* Automatic container cleanup
+
+This ensures user programs execute safely without affecting the host system.
+
+---
+
+# 🤖 AI Code Analysis
+
+The integrated AI review system analyzes submitted code and provides:
+
+* Time complexity estimation
+* Space complexity estimation
+* Code review and improvement suggestions
+* Detection of possible edge cases
+
+---
+
+# 🐳 Docker Images
+
+* `bodikechaithali/onlinejudge-frontend`
+* `bodikechaithali/onlinejudge-backend`
+* `bodikechaithali/onlinejudge-sandbox`
+
+---
+
+# 🎥 Demo
+
+**Live Demo**
+
+https://ojchaithali.me
+
+**Video Walkthrough**
+
+https://www.loom.com/share/81556f3cfcb34c2a997fcdf9fb60c53e
+
+---
+
+# 👩‍💻 Author
+
+**Bodike Chaithali**
+
+GitHub: https://github.com/BodikeChaithali
+
+---
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
