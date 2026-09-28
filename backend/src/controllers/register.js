@@ -1,6 +1,9 @@
 import AuthUser from '../models/authUser.js';
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
+import jwt from "jsonwebtoken";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const registerHandler = async (req, res) => {
     try {
@@ -38,7 +41,17 @@ const registerHandler = async (req, res) => {
         });
 
         await user.save();
-        res.status(201).json({message: 'User registered successfully', user: { id: user._id,
+
+        const token = jwt.sign({email: user.email,},process.env.JWT_SECRET,{expiresIn: "1d",},);
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+
+        return res.status(201).json({message: 'User registered successfully', user: { id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email}});

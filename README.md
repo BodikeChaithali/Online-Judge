@@ -187,6 +187,13 @@ Build the sandbox.
 ```bash
 docker build -t onlinejudge-sandbox ./sandbox
 ```
+### MongoDB Port Conflict
+
+If MongoDB is already running locally on port `27017` and Docker Compose reports that the port is already in use, stop the local MongoDB service:
+
+```bash
+sudo systemctl stop mongod
+```
 
 Start the application.
 
@@ -227,7 +234,7 @@ GEMINI_API_KEY=
 ## Frontend
 
 ```env
-VITE_API_URL=
+VITE_API_BASE_URL=
 ```
 
 ---

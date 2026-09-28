@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 import "./css/Auth.css";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,10 +32,8 @@ export default function Register() {
     setError("");
     try {
       const data = await registerUser(formData);
-      setMessage(data.message);
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      setUser(data.user);
+      navigate("/problems", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
