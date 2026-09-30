@@ -10,6 +10,7 @@ export const runCode = async (language, code, input = "") => {
 
   const response = await fetch(`${API_URL}/api/run`, {
     method: "POST",
+    credentials: "include",   
     headers: {
       "Content-Type": "application/json",
     },
@@ -23,6 +24,11 @@ export const runCode = async (language, code, input = "") => {
   const data = await response.json();
 
   if (!response.ok) {
+    if (response.status === 401) { 
+      const error = new Error("Please sign in to run code.");
+      error.type = "AUTH";
+      throw error;
+    }
     const error = new Error(data.error || "Execution failed");
     error.type = data.type;
     throw error;

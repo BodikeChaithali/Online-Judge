@@ -17,7 +17,7 @@ import "./css/ProblemDetails.css";
 export default function ProblemDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, setUser,loading: authLoading } = useAuth();
   const [problem, setProblem] = useState(null);
   const [problemLoading, setProblemLoading] = useState(true);
   const [problemError, setProblemError] = useState("");
@@ -46,7 +46,7 @@ export default function ProblemDetails() {
     problem,
     language,
     code,
-    () => navigate("/login"),
+    () => navigate("/login", { state: { from: `/problems/${id}` } }),
     setActiveTab,
   );
 
@@ -105,6 +105,7 @@ export default function ProblemDetails() {
   }
 
   const handleRun = async () => {
+    if (!user) return; 
     try {
       setShowSubmissionStatus(false);
       setLoading(true);
@@ -112,7 +113,10 @@ export default function ProblemDetails() {
       const data = await runCode(language, code, input);
       setOutput(data.output);
     } catch (err) {
-      if (err.type === "TLE") {
+      if (err.type === "AUTH") {
+        setUser(null);    
+        setOutput("Session expired. Please sign in to run code.");
+      } else if (err.type === "TLE") {
         setOutput("⏱ Time Limit Exceeded");
       } else if (err.type === "MLE") {
         setOutput("Memory Limit Exceeded");
@@ -161,6 +165,7 @@ export default function ProblemDetails() {
               output={output}
             />
             <ActionButtons
+              user={user}
               loading={loading}
               handleRun={handleRun}
               handleSubmit={handleSubmit}

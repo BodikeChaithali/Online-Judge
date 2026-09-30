@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate , useLocation} from "react-router-dom";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import "./css/Auth.css";
@@ -7,6 +7,7 @@ import "./css/Auth.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const location = useLocation(); 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ export default function Login() {
     try {
       const data = await loginUser(email, password);
       setUser(data.user);
-      navigate("/problems");
+      navigate(location.state?.from || "/problems", { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

@@ -210,6 +210,15 @@
   background: #334155;
 }
 
+.run-btn--locked {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
 .run-btn:hover {
   background: #1d4ed8;
 }

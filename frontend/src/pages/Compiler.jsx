@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";           
+import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import ProblemEditor from "../components/problemDetails/ProblemEditor";
 import ProblemConsole from "../components/problemDetails/ProblemConsole";
@@ -7,6 +9,7 @@ import { runCode } from "../services/compilerService";
 import "./css/Compiler.css";
 
 export default function Compiler() {
+  const { user, setUser, loading: authLoading } = useAuth(); 
   const [language, setLanguage] = useState("Java");
   const [code, setCode] = useState(defaultStarterCode.Java);
   const [input, setInput] = useState("");
@@ -20,13 +23,17 @@ export default function Compiler() {
   };
 
   const handleRun = async () => {
+    if (!user) return; 
     try {
       setLoading(true);
       setOutput("Running...");
       const data = await runCode(language, code, input);
       setOutput(data.output);
     } catch (err) {
-      if (err.type === "TLE") {
+      if (err.type === "AUTH") {
+        setUser(null);    
+        setOutput("Session expired. Please sign in to run code.");
+      } else if (err.type === "TLE") {
         setOutput("⏱ Time Limit Exceeded");
       } else if (err.type === "MLE") {
         setOutput("Memory Limit Exceeded");
@@ -68,9 +75,23 @@ export default function Compiler() {
           />
         </div>
         <div className="compiler-actions">
-          <button className="run-btn" onClick={handleRun} disabled={loading}>
-            {loading ? "Running..." : "Run Code"}
-          </button>
+          {user ? (
+              <button className="run-btn" onClick={handleRun} disabled={loading}>
+                {loading ? "Running..." : "Run Code"}
+              </button>
+            ) : authLoading ? (
+              <button className="run-btn" disabled>
+                Run Code
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                state={{ from: "/compiler" }}
+                className="run-btn run-btn--locked"
+              >
+                🔒 Sign in to run code
+              </Link>
+          )}
           <button className="reset-btn" onClick={handleReset}>
             Reset
           </button>
