@@ -11,6 +11,7 @@ import aiReviewRoutes from "./src/routes/aiReviewRoutes.js";
 import leaderboardRoutes from "./src/routes/leaderboardRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import problemRoutes from "./src/routes/problemRoutes.js";
+import Submission from "./src/models/submissionModel.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -36,13 +37,20 @@ app.use("/", problemRoutes);
 
 const startServer = async () => {
   try {
+    await connectDB();
+    await Submission.updateMany(
+      { status: "Running" },
+      {
+        status: "Internal Error",
+        verdict: "Server restarted while judging. Please submit again.",
+      },
+    );
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
       console.log(`http://localhost:${port}`);
     });
-    await connectDB();
   } catch (err) {
-    console.error('Failed to start server', err);
+    console.error("Failed to start server", err);
     process.exit(1);
   }
 };

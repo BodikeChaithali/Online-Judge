@@ -23,7 +23,16 @@ export const createSubmission = async (req, res) => {
       status: "Running",
       verdict: "Running",
     });
-    void evaluateSubmission(submission);
+    evaluateSubmission(submission).catch(async (err) => {
+      console.error("Judging failed:", err);
+      try {
+        submission.status = "Internal Error";
+        submission.verdict = "Internal Error";
+        await submission.save();
+      } catch (saveErr) {
+        console.error("Could not save failed submission:", saveErr);
+      }
+    });
     return res.status(201).json(submission);
   } catch (error) {
     return res.status(500).json({

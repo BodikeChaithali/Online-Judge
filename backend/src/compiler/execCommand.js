@@ -1,5 +1,7 @@
 import { Writable } from "stream";
 
+const MAX_OUTPUT_CHARS = 1024 * 1024;
+
 export const execCommand = async (container, command) => {
   const exec = await container.exec({
     Cmd: ["bash", "-c", command],
@@ -10,10 +12,17 @@ export const execCommand = async (container, command) => {
   const stream = await exec.start({});
 
   let output = "";
+  let outputTooLarge = false;
 
   const writable = new Writable({
     write(chunk, encoding, callback) {
-      output += chunk.toString();
+      if (!outputTooLarge) {
+        output += chunk.toString();
+        if (output.length > MAX_OUTPUT_CHARS) {
+          outputTooLarge = true;
+          output = "";
+        }
+      }
       callback();
     },
   });
@@ -23,6 +32,12 @@ export const execCommand = async (container, command) => {
   return new Promise((resolve, reject) => {
     stream.on("end", async () => {
       try {
+        if (outputTooLarge) {
+          return reject(
+            new Error("Runtime Error: Output limit exceeded (over 1 MB)"),
+          );
+        }
+
         const inspect = await exec.inspect();
         const exitCode = inspect.ExitCode;
 

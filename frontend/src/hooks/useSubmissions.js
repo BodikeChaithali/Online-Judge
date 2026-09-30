@@ -35,12 +35,21 @@ export function useSubmissions(
 
   useEffect(() => {
     if (!submissionId) return;
+    const startedAt = Date.now();
     const interval = setInterval(async () => {
       try {
+        if (Date.now() - startedAt > 120000) {
+          clearInterval(interval);
+          setSubmissionStatus({
+            status: "Failed",
+            verdict: "Judging is taking too long. Refresh the page to see the result.",
+          });
+          return;
+        }
         const data = await getSubmission(submissionId);
-        setSubmissionStatus(data);
         if (data.status !== "Running") {
           clearInterval(interval);
+          setSubmissionStatus(data);
           await loadSubmissions();
           setActiveTab?.("submissions");
         }
@@ -77,6 +86,10 @@ export function useSubmissions(
       setSubmissionStatus(submission);
     } catch (err) {
       console.error(err);
+      setSubmissionStatus({
+        status: "Failed",
+        verdict: err.message || "Submission failed",
+      });
     }
   };
 

@@ -5,7 +5,28 @@ import { createSandboxContainer } from "./containerManager.js";
 import { uploadFiles } from "./uploadFiles.js";
 import { execCommand } from "./execCommand.js";
 
-export const executeCode = async (language, filePath, input = "") => {
+const MAX_CONCURRENT = Number(process.env.MAX_CONCURRENT_CONTAINERS) || 3;
+let active = 0;
+const waiting = [];
+
+const acquire = () =>
+  new Promise((resolve) => {
+    if (active < MAX_CONCURRENT) {
+      active++;
+      resolve();
+    } else {
+      waiting.push(resolve);
+    }
+  });
+
+const release = () => {
+  const next = waiting.shift();
+  if (next)
+    next(); 
+  else active--;
+};
+
+const runInContainer = async (language, filePath, input = "") => {
   const container = await createSandboxContainer();
 
   const inputPath = path.join(path.dirname(filePath), "input.txt");
@@ -28,7 +49,8 @@ export const executeCode = async (language, filePath, input = "") => {
 
     case "cpp":
       fileName = "code.cpp";
-      command = "timeout 5s bash -c 'g++ code.cpp -o main && ./main < input.txt'";
+      command =
+        "timeout 5s bash -c 'g++ code.cpp -o main && ./main < input.txt'";
       break;
 
     case "java":
@@ -57,5 +79,14 @@ export const executeCode = async (language, filePath, input = "") => {
     return output;
   } finally {
     await container.remove({ force: true }).catch(() => {});
+  }
+};
+
+export const executeCode = async (language, filePath, input = "") => {
+  await acquire();
+  try {
+    return await runInContainer(language, filePath, input);
+  } finally {
+    release();
   }
 };

@@ -19,6 +19,11 @@ export const generateFile = async (language, code) => {
   if (!extension) {
     throw new Error("Unsupported language");
   }
+
+  if (language === "java" && !code.includes("public class Main")) {
+    throw new Error("Java code must contain 'public class Main'");
+  }
+  
   const jobId = uuid();
 
   const jobDir = path.join(process.cwd(), "src/compiler/Jobs", jobId);
@@ -26,10 +31,6 @@ export const generateFile = async (language, code) => {
   await fs.promises.mkdir(jobDir, {
     recursive: true,
   });
-
-  if (language === "java" && !code.includes("public class Main")) {
-    throw new Error("Java code must contain 'public class Main'");
-  }
 
   const fileName = language === "java" ? "Main.java" : `code.${extension}`;
 
