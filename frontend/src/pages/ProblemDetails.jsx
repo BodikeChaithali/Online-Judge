@@ -12,6 +12,7 @@ import SubmissionModal from "../components/problemDetails/SubmissionModal";
 import { useSubmissions } from "../hooks/useSubmissions";
 import { useAIReview } from "../hooks/useAIReview";
 import { useAuth } from "../context/AuthContext";
+import { COPY_PASTE_RESTRICTIONS } from "../constants/copyPasteRestrictions";
 import "./css/ProblemDetails.css";
 
 export default function ProblemDetails() {
@@ -130,12 +131,20 @@ export default function ProblemDetails() {
     }
   };
 
+  const blockStatementCopy = COPY_PASTE_RESTRICTIONS.problemStatement && activeTab === "description";
+  const preventDefault = (e) => e.preventDefault();
+
   return (
     <>
       <Navbar />
       <div className="problem-page">
         <div className="problem-layout">
-          <div className="problem-statement">
+          <div
+            className={`problem-statement${blockStatementCopy ? " no-copy" : ""}`}
+            onCopy={blockStatementCopy ? preventDefault : undefined}
+            onCut={blockStatementCopy ? preventDefault : undefined}
+            onContextMenu={blockStatementCopy ? preventDefault : undefined}
+          >
             <ProblemTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}

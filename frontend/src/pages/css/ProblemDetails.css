@@ -594,3 +594,17 @@
   background: rgba(239, 68, 68, 0.18);
   color: #ef4444;
 }
+
+.no-copy {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.editor-notice {
+  margin-left: auto;
+  font-size: 12px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
