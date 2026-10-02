@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { getProblems, getProblemStatuses } from "../services/problemsService";
 import "./css/Problems.css";
 
-const DIFFICULTIES = ["All", "Easy", "Medium", "Hard"];
+const DIFFICULTY_LEVELS = ["Easy", "Medium", "Hard"];
 
 function normalizeTags(tags) {
   if (!Array.isArray(tags)) return [];
@@ -139,10 +139,12 @@ export default function Problems() {
     [allTags],
   );
 
-  const urlDifficulty = searchParams.get("difficulty");
-  const difficulty = DIFFICULTIES.includes(urlDifficulty)
-    ? urlDifficulty
-    : "All";
+  const selectedDifficulties = useMemo(() => {
+    const picked = new Set(
+      searchParams.getAll("difficulty").map((value) => value.toLowerCase()),
+    );
+    return DIFFICULTY_LEVELS.filter((level) => picked.has(level.toLowerCase()));
+  }, [searchParams]);
   const selectedTags = useMemo(() => {
     const known = new Set(allTags.map((tag) => tag.key));
     return searchParams.getAll("tag").filter((key) => known.has(key));
@@ -154,11 +156,19 @@ export default function Problems() {
     setSearchParams(next, { replace: true });
   };
 
-  const setDifficulty = (level) =>
-    updateParams((params) => {
-      if (level === "All") params.delete("difficulty");
-      else params.set("difficulty", level);
-    });
+  const toggleDifficulty = (level) =>
+  updateParams((params) => {
+    const next = selectedDifficulties.includes(level)
+      ? selectedDifficulties.filter((l) => l !== level)
+      : [...selectedDifficulties, level];
+    params.delete("difficulty");
+    if (next.length < DIFFICULTY_LEVELS.length) {
+      next.forEach((l) => params.append("difficulty", l));
+    }
+  });
+
+const clearDifficulties = () =>
+  updateParams((params) => params.delete("difficulty"));
 
   const toggleTag = (key) =>
     updateParams((params) => {
@@ -180,8 +190,7 @@ export default function Problems() {
     });
   };
 
-  const activeFilterCount =
-    selectedTags.length + (difficulty !== "All" ? 1 : 0);
+  const activeFilterCount = selectedTags.length + selectedDifficulties.length;
   const hasActiveFilters = activeFilterCount > 0 || search !== "";
 
   const filteredProblems = useMemo(() => {
@@ -190,7 +199,8 @@ export default function Problems() {
         .toLowerCase()
         .includes(search.toLowerCase());
       const matchesDifficulty =
-        difficulty === "All" || problem.difficulty === difficulty;
+        selectedDifficulties.length === 0 ||
+        selectedDifficulties.includes(problem.difficulty);
       const matchesTags =
         selectedTags.length === 0 ||
         normalizeTags(problem.tags).some((tag) =>
@@ -198,7 +208,7 @@ export default function Problems() {
         );
       return matchesSearch && matchesDifficulty && matchesTags;
     });
-  }, [problems, search, difficulty, selectedTags]);
+  }, [problems, search, selectedDifficulties, selectedTags]);
 
   const getProblemStatus = (problemId) => {
     if (!user) return "Not Attempted";
@@ -231,15 +241,26 @@ export default function Problems() {
             </button>
             {showFilters && (
               <div className="difficulty-filters">
-                {DIFFICULTIES.map((level) => (
-                  <button
-                    key={level}
-                    className={difficulty === level ? "active-filter" : ""}
-                    onClick={() => setDifficulty(level)}
-                  >
-                    {level}
-                  </button>
-                ))}
+                <button
+                  className={selectedDifficulties.length === 0 ? "active-filter" : ""}
+                  aria-pressed={selectedDifficulties.length === 0}
+                  onClick={clearDifficulties}
+                >
+                  All
+                </button>
+                {DIFFICULTY_LEVELS.map((level) => {
+                  const active = selectedDifficulties.includes(level);
+                    return (
+                      <button
+                        key={level}
+                        className={active ? "active-filter" : ""}
+                        aria-pressed={active}
+                        onClick={() => toggleDifficulty(level)}
+                      >
+                        {level}
+                      </button>
+                    );
+                  })}
               </div>
             )}
           </div>
