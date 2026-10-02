@@ -1,10 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Check, Filter } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import { getProblems, getProblemStatuses } from "../services/problemsService";
 import "./css/Problems.css";
+
+const DIFFICULTIES = ["All", "Easy", "Medium", "Hard"];
+
+function normalizeTags(tags) {
+  if (!Array.isArray(tags)) return [];
+  const unique = new Map();
+  tags.forEach((raw) => {
+    const label = String(raw ?? "").trim();
+    const key = label.toLowerCase();
+    if (key && !unique.has(key)) unique.set(key, { key, label });
+  });
+  return [...unique.values()];
+}
 
 function getActionLabel(status) {
   if (status === "Solved") return "Solved";
@@ -37,7 +50,7 @@ export default function Problems() {
   const [problemsLoading, setProblemsLoading] = useState(true);
   const [problemsError, setProblemsError] = useState("");
   const [search, setSearch] = useState("");
-  const [difficulty, setDifficulty] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const [statusMap, setStatusMap] = useState({});
   const [statusLoading, setStatusLoading] = useState(false);
@@ -110,6 +123,66 @@ export default function Problems() {
       cancelled = true;
     };
   }, [user]);
+  const allTags = useMemo(() => {
+    const counts = new Map();
+    problems.forEach((problem) => {
+      normalizeTags(problem.tags).forEach(({ key, label }) => {
+        const entry = counts.get(key);
+        if (entry) entry.count += 1;
+        else counts.set(key, { key, label, count: 1 });
+      });
+    });
+    return [...counts.values()].sort((a, b) => a.label.localeCompare(b.label));
+  }, [problems]);
+  const tagLabels = useMemo(
+    () => new Map(allTags.map((tag) => [tag.key, tag.label])),
+    [allTags],
+  );
+
+  const urlDifficulty = searchParams.get("difficulty");
+  const difficulty = DIFFICULTIES.includes(urlDifficulty)
+    ? urlDifficulty
+    : "All";
+  const selectedTags = useMemo(() => {
+    const known = new Set(allTags.map((tag) => tag.key));
+    return searchParams.getAll("tag").filter((key) => known.has(key));
+  }, [searchParams, allTags]);
+
+  const updateParams = (change) => {
+    const next = new URLSearchParams(searchParams);
+    change(next);
+    setSearchParams(next, { replace: true });
+  };
+
+  const setDifficulty = (level) =>
+    updateParams((params) => {
+      if (level === "All") params.delete("difficulty");
+      else params.set("difficulty", level);
+    });
+
+  const toggleTag = (key) =>
+    updateParams((params) => {
+      const current = params.getAll("tag");
+      const next = current.includes(key)
+        ? current.filter((k) => k !== key)
+        : [...current, key];
+      params.delete("tag");
+      next.forEach((k) => params.append("tag", k));
+    });
+
+  const clearTags = () => updateParams((params) => params.delete("tag"));
+
+  const clearFilters = () => {
+    setSearch("");
+    updateParams((params) => {
+      params.delete("tag");
+      params.delete("difficulty");
+    });
+  };
+
+  const activeFilterCount =
+    selectedTags.length + (difficulty !== "All" ? 1 : 0);
+  const hasActiveFilters = activeFilterCount > 0 || search !== "";
 
   const filteredProblems = useMemo(() => {
     return problems.filter((problem) => {
@@ -118,9 +191,14 @@ export default function Problems() {
         .includes(search.toLowerCase());
       const matchesDifficulty =
         difficulty === "All" || problem.difficulty === difficulty;
-      return matchesSearch && matchesDifficulty;
+      const matchesTags =
+        selectedTags.length === 0 ||
+        normalizeTags(problem.tags).some((tag) =>
+          selectedTags.includes(tag.key),
+        );
+      return matchesSearch && matchesDifficulty && matchesTags;
     });
-  }, [problems, search, difficulty]);
+  }, [problems, search, difficulty, selectedTags]);
 
   const getProblemStatus = (problemId) => {
     if (!user) return "Not Attempted";
@@ -143,12 +221,17 @@ export default function Problems() {
             <button
               className="filter-btn"
               onClick={() => setShowFilters(!showFilters)}
+              aria-label="Toggle filters"
+              aria-expanded={showFilters}
             >
               <Filter size={18} />
+              {activeFilterCount > 0 && (
+                <span className="filter-badge">{activeFilterCount}</span>
+              )}
             </button>
             {showFilters && (
               <div className="difficulty-filters">
-                {["All", "Easy", "Medium", "Hard"].map((level) => (
+                {DIFFICULTIES.map((level) => (
                   <button
                     key={level}
                     className={difficulty === level ? "active-filter" : ""}
@@ -160,6 +243,31 @@ export default function Problems() {
               </div>
             )}
           </div>
+          {showFilters && allTags.length > 0 && (
+            <div className="tag-filters">
+              <span className="tag-filters-label">Topics</span>
+              {allTags.map(({ key, label, count }) => {
+                const active = selectedTags.includes(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={active}
+                    className={`tag-chip${active ? " active" : ""}`}
+                    onClick={() => toggleTag(key)}
+                  >
+                    {label}
+                    <span className="tag-count">{count}</span>
+                  </button>
+                );
+              })}
+              {selectedTags.length > 0 && (
+                <button type="button" className="tag-clear" onClick={clearTags}>
+                  Clear topics
+                </button>
+              )}
+            </div>
+          )}
           <div className="problems-container">
             {problemsLoading && (
               <div className="no-problems">Loading problems...</div>
@@ -172,7 +280,22 @@ export default function Problems() {
             {!problemsLoading &&
               !problemsError &&
               filteredProblems.length === 0 && (
-                <div className="no-problems">No Problems Available</div>
+                <div className="no-problems">
+                  {problems.length > 0
+                    ? "No problems match your filters"
+                    : "No Problems Available"}
+                  {problems.length > 0 && hasActiveFilters && (
+                    <div>
+                      <button
+                        type="button"
+                        className="clear-filters-btn"
+                        onClick={clearFilters}
+                      >
+                        Clear filters
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
 
             {!problemsLoading &&
@@ -183,9 +306,25 @@ export default function Problems() {
                   to={`/problems/${problem.id}`}
                   className="problem-card"
                 >
-                  <span className="problem-title">
-                    {problem.id}. {problem.title}
-                  </span>
+                  <div className="problem-main">
+                    <span className="problem-title">
+                      {problem.id}. {problem.title}
+                    </span>
+                    {normalizeTags(problem.tags).length > 0 && (
+                      <div className="card-tags">
+                        {normalizeTags(problem.tags).map(({ key }) => (
+                          <span
+                            key={key}
+                            className={`card-tag${
+                              selectedTags.includes(key) ? " matched" : ""
+                            }`}
+                          >
+                            {tagLabels.get(key)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div className="problem-right">
                     <span
                       className={`difficulty ${problem.difficulty.toLowerCase()}`}
