@@ -6,6 +6,8 @@ import deleteHandler from '../controllers/delete.js';
 import authMiddleware from "../middleware/authMiddleware.js";
 import meHandler from "../controllers/meHandler.js";
 import logoutHandler from "../controllers/logoutHandler.js";
+import { verifyOtpHandler, resendOtpHandler } from "../controllers/verifyEmail.js";
+import { registerLimiter, verifyLimiter, resendLimiter } from "../middleware/authRateLimiters.js";
 
 const router = Router();
 
@@ -17,7 +19,9 @@ router.get('/',(req,res) => {
     });
 });
 
-router.post('/api/register', registerHandler);
+router.post('/api/register', registerLimiter, registerHandler);
+router.post('/api/verify-otp', verifyLimiter, verifyOtpHandler);
+router.post('/api/resend-otp', resendLimiter, resendOtpHandler);
 router.post('/api/login', loginHandler);
 router.put('/api/update',authMiddleware, updateHandler);
 router.delete('/api/delete',authMiddleware, deleteHandler);

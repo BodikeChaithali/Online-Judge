@@ -13,8 +13,12 @@ import profileRoutes from "./src/routes/profileRoutes.js";
 import problemRoutes from "./src/routes/problemRoutes.js";
 import Submission from "./src/models/submissionModel.js";
 import cookieParser from "cookie-parser";
+import { verifyEmailTransport } from "./src/utils/sendEmail.js";
 
 const app = express();
+if (process.env.TRUST_PROXY) {
+  app.set("trust proxy", Number(process.env.TRUST_PROXY));
+}
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
@@ -45,6 +49,7 @@ const startServer = async () => {
         verdict: "Server restarted while judging. Please submit again.",
       },
     );
+    void verifyEmailTransport();
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
       console.log(`http://localhost:${port}`);

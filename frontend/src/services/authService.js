@@ -1,5 +1,12 @@
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
+const toError = (data) => {
+  const err = new Error(data.message);
+  err.code = data.code;
+  err.retryAfter = data.retryAfter;
+  return err;
+};
+
 export const registerUser = async (userData) => {
   const response = await fetch(`${API_URL}/api/register`, {
     method: "POST",
@@ -10,7 +17,35 @@ export const registerUser = async (userData) => {
     body: JSON.stringify(userData),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message);
+  if (!response.ok) throw toError(data);
+  return data;
+};
+
+export const verifyOtp = async (verificationId, otp) => {
+  const response = await fetch(`${API_URL}/api/verify-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ verificationId, otp }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw toError(data);
+  return data;
+};
+
+export const resendOtp = async (verificationId) => {
+  const response = await fetch(`${API_URL}/api/resend-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ verificationId }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw toError(data);
   return data;
 };
 
